@@ -1,6 +1,5 @@
 package com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.response;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.Set;

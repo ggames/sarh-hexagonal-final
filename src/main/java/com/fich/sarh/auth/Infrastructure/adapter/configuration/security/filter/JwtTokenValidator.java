@@ -1,12 +1,7 @@
 package com.fich.sarh.auth.Infrastructure.adapter.configuration.security.filter;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fich.sarh.auth.Infrastructure.adapter.configuration.datasource.DatabaseContextHolder;
-import com.fich.sarh.auth.Infrastructure.adapter.configuration.datasource.DatabaseType;
 import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.CustomUserDetails;
-import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.SecurityConfig;
 import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.jwt.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,19 +10,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 
 @Component
@@ -71,65 +59,42 @@ public class JwtTokenValidator extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String path =request.getRequestURI();
+        String path = request.getRequestURI();
 
-        try {
 
-            if(path.startsWith("/auth")){
-                DatabaseContextHolder.setDatabaseType(DatabaseType.AUTH);
-                filterChain.doFilter(request, response);
-                return;
-            }
-            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (path.startsWith("/auth")) {
 
-            if( authHeader != null && authHeader.startsWith("Bearer ")){
-                String token = authHeader.substring(7);
+            filterChain.doFilter(request, response);
+            return;
+        }
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-                if(jwtUtils.isTokenValid(token)){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
 
-                    DecodedJWT decodedJWT = jwtUtils.validateToken(token);
-                    DatabaseType dbType = jwtUtils.extractDatabase(decodedJWT);
+            if (jwtUtils.isTokenValid(token)) {
 
-                    DatabaseContextHolder.setDatabaseType(dbType);
+                DecodedJWT decodedJWT = jwtUtils.validateToken(token);
 
-                    CustomUserDetails userDetails = jwtUtils.buildUserDetails(decodedJWT);
+                CustomUserDetails userDetails = jwtUtils.buildUserDetails(decodedJWT);
 
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
 
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                } else {
-                    DatabaseContextHolder.setDatabaseType(DatabaseType.PROD);
-                }
-            } else {
-                DatabaseContextHolder.setDatabaseType(DatabaseType.PROD);
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
 
             filterChain.doFilter(request, response);
 
-        } finally {
-            DatabaseContextHolder.clear();
+
         }
+
+
     }
-
-    private boolean isPublicPath(String path) {
-        return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
-    }
-
-    private boolean isAllowPath(HttpServletRequest request) {
-
-        String path = request.getRequestURI();
-
-        logger.warn("EL PATH es :", path);
-
-        return ALLOWED_PATHS.stream().anyMatch(path::contains);
-    }
-
-
 }
 /*
    protected void doFilterInternal(@NonNull HttpServletRequest request,

@@ -6,7 +6,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
-import javax.management.relation.Role;
 import java.util.List;
 import java.util.Set;
 

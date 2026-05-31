@@ -1,0 +1,133 @@
+package com.fich.sarh.plantofpositions.infrastructure.adapters.input.rest.controller;
+
+import com.fich.sarh.common.WebAdapter;
+import com.fich.sarh.plantofpositions.application.ports.entrypoint.api.*;
+import com.fich.sarh.plantofpositions.domain.model.*;
+import com.fich.sarh.plantofpositions.domain.ports.outbound.PlantPositionSpiPort;
+import mapper.com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.PlantOfPositionRestMapper;
+import request.model.com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.PlantOfPositionRequest;
+import response.model.com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.PlantOfPositionResponse;
+
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+@WebAdapter
+@RestController
+@RequestMapping("/plant")
+@RequiredArgsConstructor
+public class PlantOfPositionController {
+
+    private final PlantPositionSpiPort plantSpiPort;
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+   // private final PlantOfPositionRetrieveApiPort retrievePlantService;
+   // private final PlantOfPositionSaveApiPort savePlantService;
+    // private final MovementRetrieveServicePort movementRetrieve;
+   // private final PlantOfPositionUpdateApiPort updatePlantService;
+   // private final PlantOfPositionSearchApiPort plantSearch;
+
+   // private final ExcelPlantReportApiPort excelReport;
+
+
+
+
+    @GetMapping("all")
+    @PreAuthorize("hasRole('USER')")
+    public List<PlantOfPositionDto> findAll() {
+        // logger.info("Planta de Cargo " );
+        // retrievePlantService.getAllPlantOfPositions().stream().forEach(p -> {System.out.println(p.getId()); } );
+
+        return retrievePlantService.getAllPlantOfPositions();
+
+    }
+
+    @GetMapping("{id}")
+    @PreAuthorize("hasRole('USER')")
+    public PlantOfPositionResponse findPlantPositionById(@PathVariable Long id) {
+        Optional<PlantOfPosition> plantOfPositionFound = retrievePlantService.findById(id);
+        if (!plantOfPositionFound.isPresent()) {
+            return null;
+        }
+        return PlantOfPositionRestMapper.INSTANCE.toPlantOfPositionResponse(plantOfPositionFound.get());
+    }
+
+    @PostMapping("create")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> save(@RequestBody PlantOfPositionCommand request) {
+
+        return new ResponseEntity<>(savePlantService.savePlantOfPosition(request), HttpStatus.CREATED);
+
+    }
+
+    @GetMapping("search/")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> search(PlantFilter filter) {
+
+        // Specification<PlantOfPositionEntity> specification = PlantSpecifications.createSpecification(filter);
+        return new ResponseEntity<>(plantSearch.search(filter), HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping(
+            value = "/report/excel",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    public ResponseEntity<byte[]> generateExcelReport(@RequestBody PlantFilter filter) {
+        logger.info("Generando reporte Excel con filtro: {}", filter);
+
+        List<PlantProjectionDTO> plants = plantSearch.search(filter);
+
+        if (plants == null || plants.isEmpty()) {
+            logger.warn("No se encontraron resultados para el filtro");
+            return ResponseEntity.noContent().build();
+        }
+
+        try (ByteArrayInputStream in = excelReport.createExcel(plants)) {
+            if (in == null) {
+                logger.error("Error al generar el archivo Excel");
+                return ResponseEntity.internalServerError().build();
+            }
+
+            byte[] bytes = in.readAllBytes();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"plantas.xlsx\"");
+            headers.add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+            headers.add("Pragma", "no-cache");
+            headers.add("Expires", "0");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType(
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    ))
+                    .contentLength(bytes.length)
+                    .body(bytes);
+
+        } catch (IOException e) {
+            logger.error("Error al generar el archivo Excel", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    @PutMapping("update/{id}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PlantOfPositionRequest request) {
+
+        return new ResponseEntity<>(updatePlantService.updatePlantOfPosition(id, request), HttpStatus.OK);
+
+
+    }
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                

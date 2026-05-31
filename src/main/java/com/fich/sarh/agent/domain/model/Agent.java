@@ -1,6 +1,6 @@
 package com.fich.sarh.agent.domain.model;
 
-import com.fich.sarh.agent.infrastructure.adapter.output.persistence.validation.UniqueDocumentAgent;
+import com.fich.sarh.agent.infrastructure.adapters.outbound.persistence.validation.UniqueDocumentAgent;
 import com.fich.sarh.common.DocumentType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,8 +11,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Builder
 @Getter

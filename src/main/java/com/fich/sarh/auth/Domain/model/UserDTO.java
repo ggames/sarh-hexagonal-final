@@ -1,14 +1,11 @@
 package com.fich.sarh.auth.Domain.model;
 
-import com.fich.sarh.auth.Infrastructure.adapter.validation.UniqueUsername;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.Collection;
 import java.util.Set;
 
 @Getter

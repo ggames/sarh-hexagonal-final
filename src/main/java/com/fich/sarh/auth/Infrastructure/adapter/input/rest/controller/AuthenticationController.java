@@ -1,15 +1,11 @@
 package com.fich.sarh.auth.Infrastructure.adapter.input.rest.controller;
 
 import com.fich.sarh.auth.Application.ports.entrypoint.api.AuthApiPort;
-import com.fich.sarh.auth.Application.ports.output.persistence.UserDetailsSpiPort;
 import com.fich.sarh.auth.Application.ports.output.persistence.UserResetPasswordSpiPort;
-import com.fich.sarh.auth.Infrastructure.adapter.configuration.datasource.DatabaseContextHolder;
-import com.fich.sarh.auth.Infrastructure.adapter.configuration.datasource.DatabaseType;
 import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.CustomUserDetails;
 import com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.request.LoginRequest;
 import com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.request.UserChangePasswordRequest;
 import com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.response.AuthResponse;
-
 import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +37,7 @@ public class AuthenticationController {
     @PostMapping(value = "log-in")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest userRequest) {
 
-        DatabaseContextHolder.setDatabaseType(DatabaseType.AUTH);
-
-        try {
-            logger.info("LOGIN {} " + userRequest);
+                    logger.info("LOGIN {} " + userRequest);
 
             AuthResponse authResponse = authApiPort.login(userRequest);
 
@@ -53,9 +46,6 @@ public class AuthenticationController {
 
             return new ResponseEntity<>(authResponse, HttpStatus.OK);
 
-        } finally {
-            DatabaseContextHolder.clear();
-        }
 
 
     }
@@ -63,15 +53,9 @@ public class AuthenticationController {
     @PostMapping("refresh")
     public ResponseEntity<AuthResponse> refresh(@RequestBody Map<String, String> request) {
 
-        DatabaseContextHolder.setDatabaseType(DatabaseType.AUTH);
-
-        try {
             logger.info("REFRESH TOKEN " + request.get("refreshToken"));
             return ResponseEntity.ok(
                     authApiPort.refreshToken(request.get("refreshToken")));
-        } finally {
-            DatabaseContextHolder.clear();
-        }
 
 
     }
@@ -80,9 +64,7 @@ public class AuthenticationController {
     @PostMapping(value = "/change")
     public ResponseEntity<?> changePassword(Authentication authentication, @RequestBody @Valid UserChangePasswordRequest request) {
 
-        DatabaseContextHolder.setDatabaseType(DatabaseType.AUTH);
 
-        try {
             logger.error("AUTH EN CONTROLLER: {}", authentication);
 
 
@@ -102,9 +84,7 @@ public class AuthenticationController {
 
             return ResponseEntity.ok(Map.of("message", "Password actualizada correctamente"));
 
-        } finally {
-            DatabaseContextHolder.clear();
-        }
+
 
     }
 

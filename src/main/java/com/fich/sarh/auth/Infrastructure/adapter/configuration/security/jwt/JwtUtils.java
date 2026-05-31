@@ -6,7 +6,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fich.sarh.auth.Infrastructure.adapter.configuration.datasource.DatabaseType;
 import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.CustomUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,6 @@ public class JwtUtils {
                 .stream().map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(",")); // READ,WRITE,
 
-        DatabaseType databaseType = resolveDatabaseFromAuthorities(authentication.getAuthorities());
 
         Date now = new Date();
         Date expiresAt = new Date(now.getTime() + expiration);
@@ -84,7 +82,7 @@ public class JwtUtils {
                 .withSubject(user.getUsername())
                 .withClaim("userId", user.getId())
                 .withClaim("authorities", authorities)
-                .withClaim("db", databaseType.name())
+
                 .withClaim("type", "access")
                 .withClaim("mustChangePassword", mustChangePassword)
                 .withIssuedAt(now)
@@ -95,29 +93,7 @@ public class JwtUtils {
 
     }
 
-    private DatabaseType resolveDatabaseFromAuthorities(Collection<? extends GrantedAuthority> authorities){
-        Set<String> roles = authorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
 
-        if(roles.contains("ROLE_DEVELOPER")){
-            return DatabaseType.TEST;
-        }
-        if(roles.contains("ROLE_ADMIN")){
-            return DatabaseType.PROD;
-        }
-
-        return DatabaseType.PROD;
-    }
-
-    public DatabaseType extractDatabase(DecodedJWT jwt){
-       String db = jwt.getClaim("db").asString();
-
-       if( db == null){
-           return DatabaseType.PROD; //fallback seguro
-       }
-       return DatabaseType.valueOf(db);
-    }
 
     public DecodedJWT validateToken(String token) {
 
@@ -199,16 +175,13 @@ public class JwtUtils {
 
         String username = extractUsernameFromAuth(authentication);
 
-        DatabaseType databaseType = resolveDatabaseFromAuthorities(authentication.getAuthorities());
-
         Date now = new Date();
         Date expiresAt = new Date(now.getTime() + expiryDate);
 
         return JWT.create()
                 .withIssuer(userGenerator)
                 .withSubject(username)
-                .withClaim("db", databaseType.name())
-                .withClaim("type", "refresh")
+               .withClaim("type", "refresh")
                 .withIssuedAt(now)
                 .withExpiresAt(expiresAt)
                 .withJWTId(UUID.randomUUID().toString())

@@ -3,7 +3,6 @@ package com.fich.sarh.point.infrastructure.adapter.input.rest.model.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 @Builder

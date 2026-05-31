@@ -1,11 +1,13 @@
 package com.fich.sarh.common.model;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
-@Data
+@Getter @Setter
 @NoArgsConstructor
 public class ApiResponse {
 

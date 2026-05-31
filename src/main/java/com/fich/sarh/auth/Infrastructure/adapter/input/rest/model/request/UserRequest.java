@@ -1,8 +1,6 @@
 package com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.request;
 
 
-import com.fich.sarh.auth.Domain.model.RoleDTO;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

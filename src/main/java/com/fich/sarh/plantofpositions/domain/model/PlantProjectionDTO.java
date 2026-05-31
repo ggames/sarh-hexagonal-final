@@ -1,8 +1,5 @@
 package com.fich.sarh.plantofpositions.domain.model;
 
-import com.fich.sarh.common.CharacterPlant;
-import com.fich.sarh.common.PlantStatus;
-
 public class PlantProjectionDTO {
 
     private final String id;
@@ -13,6 +10,7 @@ public class PlantProjectionDTO {
     private final String lastname;
     private final String document;
     private final String namePosition;
+    private final Long pointsAvailable;
 
     public PlantProjectionDTO(
             String id,
@@ -22,7 +20,8 @@ public class PlantProjectionDTO {
             String firstname,
             String lastname,
             String document,
-            String namePosition
+            String namePosition,
+            Long pointsAvailable
     ) {
         this.id = id;
         this.currentStatusID = currentStatusID;
@@ -32,6 +31,7 @@ public class PlantProjectionDTO {
         this.lastname = lastname;
         this.document = document;
         this.namePosition = namePosition;
+        this.pointsAvailable= pointsAvailable;
     }
 
     public String getId() { return id; }
@@ -42,6 +42,7 @@ public class PlantProjectionDTO {
     public String getLastname() { return lastname; }
     public String getDocument() { return document; }
     public String getNamePosition() { return namePosition; }
+    public Long getPointsAvailable(){ return pointsAvailable;}
 }
 
 

@@ -2,14 +2,12 @@ package com.fich.sarh.auth.Application.services;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fich.sarh.auth.Application.ports.entrypoint.api.AuthApiPort;
-import com.fich.sarh.auth.Application.ports.output.persistence.DatabaseProvisioningPort;
 import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.CustomUserDetails;
 import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.jwt.JwtUtils;
 import com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.request.LoginRequest;
 import com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.response.AuthResponse;
 import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.adapter.UserDetailPersistenceAdapter;
 import com.fich.sarh.common.UseCase;
-import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +27,12 @@ public class AuthServiceUseCase implements AuthApiPort {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final String TEST_DB_NAME = "humanresource_test";
+
 
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserDetailPersistenceAdapter userDetailService;
-
-    private final DatabaseProvisioningPort databaseProvisioningService;
 
     @Override
     public AuthResponse login(LoginRequest request) {
@@ -56,7 +52,7 @@ public class AuthServiceUseCase implements AuthApiPort {
 
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-            validateDeveloperDatabase(user);
+
 
             boolean mustChangePassword = user.getMustChangePassword();
             String accessToken = jwtUtils.createToken(authentication, mustChangePassword);
@@ -114,22 +110,4 @@ public class AuthServiceUseCase implements AuthApiPort {
         );
     }
 
-    private void validateDeveloperDatabase(CustomUserDetails user){
-
-        boolean isDeveloper = user.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_DEVELOPER"));
-
-        if(!isDeveloper) return;
-
-        logger.warn("USUARIO DEVELOPER detectado -> verificado base TEST");
-
-        boolean exists = databaseProvisioningService.databaseExists(TEST_DB_NAME);
-
-        if(!exists){
-            logger.error("BASE TEST NO EXISTE");
-            throw new BusinessRuleViolationException("La base de datos TEST no existe. No puede entrar al sistema.");
-        }
-
-        logger.info("BASE TEST OK");
-    }
 }

@@ -1,8 +1,6 @@
 package com.fich.sarh.auth.Infrastructure.adapter.input.rest.controller;
 
-import com.fich.sarh.auth.Application.ports.output.persistence.UserDetailsSpiPort;
 import com.fich.sarh.auth.Application.ports.output.persistence.UserResetPasswordSpiPort;
-import com.fich.sarh.auth.Application.ports.output.persistence.UserSendEmailResetPasswordSpiPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;

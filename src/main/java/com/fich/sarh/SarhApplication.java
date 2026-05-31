@@ -1,22 +1,8 @@
 	package com.fich.sarh;
 
-import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.entities.PermissionEntity;
-import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.entities.RoleEntity;
-import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.entities.RoleEnum;
-import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.entities.UserEntity;
-import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.repository.UserRepository;
-import com.fich.sarh.movement.infrastructure.adapter.output.persistence.repository.MovementRepository;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
-
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+    import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 @SpringBootApplication(

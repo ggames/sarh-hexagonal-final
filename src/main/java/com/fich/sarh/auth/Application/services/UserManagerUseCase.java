@@ -1,7 +1,6 @@
 package com.fich.sarh.auth.Application.services;
 
 import com.fich.sarh.auth.Application.ports.entrypoint.api.UserManagerApiPort;
-import com.fich.sarh.auth.Application.ports.output.persistence.RoleRetrieveSpiPort;
 import com.fich.sarh.auth.Application.ports.output.persistence.UserSaveSpiPort;
 import com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.request.UserRequest;
 import com.fich.sarh.auth.Infrastructure.adapter.input.rest.model.response.AuthResponse;

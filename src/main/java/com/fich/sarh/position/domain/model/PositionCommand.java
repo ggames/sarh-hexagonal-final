@@ -12,19 +12,19 @@ import java.util.List;
 @Builder
 public class PositionCommand {
 
-    Long pointId;
-    Long organizationalId;
+    Long point;
+    Long organizational;
     StatusOfPositions positionStatus;
     List<Long> originPositionIds;
-    Long resolutionTransformationId;
+    Long resolutionTransformation;
 
     @Override
     public String toString() {
         return "PositionCommand{" +
-                "pointId=" + pointId +
-                ", organizationalId=" + organizationalId +
+                "pointId=" + point +
+                ", organizationalId=" + organizational +
                 ", originPositionId=" + originPositionIds +
-                ", resolutionTransformationId=" + resolutionTransformationId +
+                ", resolutionTransformationId=" + resolutionTransformation +
                 '}';
     }
 }

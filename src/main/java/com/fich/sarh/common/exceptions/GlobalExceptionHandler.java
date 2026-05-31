@@ -21,6 +21,11 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse(exception.getMessage(), webRequest.getDescription(false));
         return  new ResponseEntity<>(apiResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse> handlerResourceNotFoundException(ResourceNotFoundException ex, WebRequest webRequest){
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex){

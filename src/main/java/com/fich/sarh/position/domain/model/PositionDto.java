@@ -1,10 +1,6 @@
 package com.fich.sarh.position.domain.model;
 
 import com.fich.sarh.common.StatusOfPositions;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-import java.util.logging.Level;
 
 
 public interface PositionDto {

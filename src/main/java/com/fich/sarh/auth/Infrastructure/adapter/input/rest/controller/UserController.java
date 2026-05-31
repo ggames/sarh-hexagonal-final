@@ -3,7 +3,6 @@ package com.fich.sarh.auth.Infrastructure.adapter.input.rest.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fich.sarh.auth.Application.ports.entrypoint.api.RoleRetrieveApiPort;
 import com.fich.sarh.auth.Application.ports.entrypoint.api.UserSaveApiPort;
-import com.fich.sarh.auth.Application.ports.output.persistence.UserResetPasswordSpiPort;
 import com.fich.sarh.auth.Application.ports.output.persistence.UserRetrieveSpiPort;
 import com.fich.sarh.auth.Application.ports.output.persistence.UserUpdateSpiPort;
 import com.fich.sarh.auth.Application.ports.output.persistence.UserUploadSpiPort;
@@ -13,8 +12,6 @@ import com.fich.sarh.auth.Infrastructure.adapter.input.rest.mapper.UserRestMappe
 import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.entities.RoleEntity;
 import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.entities.UserEntity;
 import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.mapper.RoleMapper;
-import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.mapper.UserMapper;
-import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -33,7 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -61,26 +57,26 @@ public class UserController {
 
 
 
-    @PreAuthorize("hasAnyRole('ADMIN','DEVELOPER')")
+    @PreAuthorize("hasAnyRole('ADMIN','ONLY_CONSULT')")
     @GetMapping("{userId}")
     public ResponseEntity<?> fetchUserById(@PathVariable Long userId) {
         return ResponseEntity.ok().body(UserRestMapper.INSTANCE.toUserResponse(userRetrieveSpiPort.findUserById(userId).get()));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ONLY_CONSULT')")
     @GetMapping("all")
     public ResponseEntity<?> fetchAllUsers() {
         return ResponseEntity.ok().body(userRetrieveSpiPort.findAllUsers());
     }
 
 
-    @PreAuthorize("hasAnyRole('ADMIN','DEVELOPER')")
+    @PreAuthorize("hasAnyRole('ADMIN','ONLY_CONSULT')")
     @GetMapping("/search/{query}")
     public ResponseEntity<?> fetchUserByUsernameAndEmail(@PathVariable String query) {
         return ResponseEntity.ok().body(userRetrieveSpiPort.findUserByUsernameAndEmail(query));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','DEVELOPER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createUser(@Valid @RequestPart("createUser") UserDTO createUser,
                                         @RequestPart(value = "file", required = false) MultipartFile file) throws JsonProcessingException {
