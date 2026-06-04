@@ -5,8 +5,8 @@ import com.fich.sarh.organizationalunit.domain.ports.inbound.OrganizationalunitA
 import com.fich.sarh.point.domain.ports.outbound.PointSpiPort;
 import com.fich.sarh.position.domain.model.Position;
 import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
-import com.fich.sarh.transformation.application.ports.persistence.TransformationRetrieveSpiPort;
 import com.fich.sarh.transformation.domain.model.Transformation;
+import com.fich.sarh.transformation.domain.ports.outbound.TransformationSpiPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class AvailablePointUpdatePositionStrategy implements UpdatePositionStrat
 
     // REEMPLAZAR CUANDO SE FACTORICE POINT
     private final PointSpiPort pointSpiPort;
-    private final TransformationRetrieveSpiPort transformationSpiPort;
+    private final TransformationSpiPort transformationSpiPort;
 
     @Override
     public Position update(Long id, Position command) {
@@ -31,7 +31,7 @@ public class AvailablePointUpdatePositionStrategy implements UpdatePositionStrat
         position.setPositionStatus(command.getPositionStatus());
 
         if(command.getResolutionSuppression() != null){
-            Transformation t = transformationSpiPort.findById(command.getResolutionSuppression().getId())
+            Transformation t = transformationSpiPort.findTransformationById(command.getResolutionSuppression().getId())
                     .orElseThrow(()-> new ResourceNotFoundException("No se encontro la transformación de supresión"));
 
             position.setResolutionSuppression(t);

@@ -1,5 +1,6 @@
 package com.fich.sarh.auth.Infrastructure.adapter.configuration.security;
 
+import com.fich.sarh.auth.Domain.ports.outbound.UserSpiPort;
 import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.filter.JwtTokenValidator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -8,12 +9,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,9 +34,8 @@ import java.util.List;
 public class SecurityConfig {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-
     private final JwtTokenValidator jwtTokenValidator;
-
+    private final UserSpiPort userSpiPort;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -76,19 +79,24 @@ public class SecurityConfig {
 
 
     @Bean
-    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder, AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder,
+                                                       AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-  /*  @Bean
+    @Bean
+    public UserDetailsService userDetailsService(){
+        return username -> userSpiPort.loadUserByUsername(username);
+    }
+    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailService);
+        provider.setUserDetailsService(userDetailsService());
 
         return provider;
     }
-  */
+
 
     @Bean
     PasswordEncoder passwordEncoder() {

@@ -1,0 +1,38 @@
+package com.fich.sarh.auth.Infrastructure.adapter.inbound.rest.model.request;
+
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+
+import java.util.Set;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UserRequest {
+
+    @Email
+    @NotBlank
+    private String email;
+    @NotBlank
+    private String username;
+
+    private String profilePicturePath;
+
+    @NotBlank
+    private String password;
+
+    boolean enabled;
+
+    boolean accountNonExpired;
+
+    boolean accountNonLocked;
+
+    boolean credentialNonExpired;
+
+    private Set<RoleRequest> roles;
+
+}

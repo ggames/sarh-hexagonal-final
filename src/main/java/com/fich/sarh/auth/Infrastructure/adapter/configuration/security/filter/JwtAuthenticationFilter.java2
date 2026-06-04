@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.jwt.JwtUtils;
-import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.entities.UserEntity;
+import entities.com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.UserEntity;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

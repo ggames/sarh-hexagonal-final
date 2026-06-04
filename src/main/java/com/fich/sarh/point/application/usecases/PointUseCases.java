@@ -9,11 +9,13 @@ import com.fich.sarh.point.infrastructure.adapter.input.rest.model.request.Point
 import com.fich.sarh.point.infrastructure.adapter.input.rest.model.response.PointResponse;
 import com.fich.sarh.point.infrastructure.adapter.output.persistence.mapper.PointRestMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.Optional;
 @UseCase
 @RequiredArgsConstructor
+@Log4j2
 public class PointUseCases implements PointApiPort {
 
     private final PointSpiPort pointSpiPort;
@@ -51,11 +53,25 @@ public class PointUseCases implements PointApiPort {
 
     @Override
     public void applyGlobalParity(double percentage) {
+        double percent = percentage/100.0;
+
+        pointSpiPort.findAllPoints().stream()
+                .forEach(point -> {
+                    long prevAmount = point.getAmountPoint();
+                    double nextAmount = prevAmount*(1.0 + percent);
+                    log.info("Nuevo Valor de Tipo  " +nextAmount);
+                    point.setAmountPoint((long)nextAmount);
+                    pointSpiPort.savePoint(point);
+
+                });
 
     }
 
     @Override
     public void applyParityByPositionType(Long id, Long amount_point) {
-
+           var point = pointSpiPort.findPointById(id)
+                   .orElseThrow(()-> new ResourceNotFoundException("Tipo de Cargo"));
+           point.setAmountPoint(amount_point);
+           pointSpiPort.savePoint(point);
     }
 }

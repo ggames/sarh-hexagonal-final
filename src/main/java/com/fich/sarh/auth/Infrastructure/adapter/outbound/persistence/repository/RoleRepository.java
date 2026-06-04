@@ -1,0 +1,13 @@
+package com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.repository;
+
+import com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.entities.RoleEntity;
+import com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.entities.RoleEnum;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Set;
+
+public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
+    Set<RoleEntity> findRoleEntitiesByRoleEnumIn(Set<String> roleNames);
+
+    RoleEntity findByRoleEnum(RoleEnum name);
+}

@@ -1,6 +1,6 @@
 package com.fich.sarh.auth.Domain.model;
 
-import com.fich.sarh.auth.Infrastructure.adapter.output.persistence.entities.RoleEnum;
+import com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.entities.RoleEnum;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;

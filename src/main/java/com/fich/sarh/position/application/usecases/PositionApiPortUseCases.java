@@ -17,8 +17,8 @@ import com.fich.sarh.position.domain.ports.inbound.PositionApiPort;
 import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
 import com.fich.sarh.position.domain.service.PositionDomainService;
 import com.fich.sarh.relationshipofposition.domain.service.RelationshipPositionDomainService;
-import com.fich.sarh.transformation.application.ports.persistence.TransformationRetrieveSpiPort;
 import com.fich.sarh.transformation.domain.model.Transformation;
+import com.fich.sarh.transformation.domain.ports.outbound.TransformationSpiPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -37,7 +37,7 @@ class PositionApiPortUseCases implements PositionApiPort {
 
     // REEMPLAZAR CUANDO SE FACTORICE POINT
     private final PointSpiPort pointSpiPort;
-    private final TransformationRetrieveSpiPort transformationSpiPort;
+    private final TransformationSpiPort transformationSpiPort;
     private final OrganizationalunitSpiPort organizationalUnitSpiPort;
 
     private final FullUpdatePositionStrategy fullStrategy;
@@ -130,7 +130,7 @@ class PositionApiPortUseCases implements PositionApiPort {
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el tipo de cargo"));
 
         Transformation transformation = transformationSpiPort
-                .findById(command.getResolutionTransformation())
+                .findTransformationById(command.getResolutionTransformation())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el resolución de creación del cargo"));
 
         OrganizationalUnit organizationalUnit = organizationalUnitSpiPort
