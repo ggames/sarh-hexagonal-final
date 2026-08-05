@@ -37,9 +37,6 @@ public class UserController {
     private String file_path;
 
 
-
-
-
     @PreAuthorize("hasAnyRole('ADMIN','ONLY_CONSULT')")
     @GetMapping("{userId}")
     public ResponseEntity<?> fetchUserById(@PathVariable Long userId) {
@@ -95,14 +92,13 @@ public class UserController {
 
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userApiPort.createUser(createUser,file ));
+                .body(userApiPort.createUser(createUser, file));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','DEVELOPER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/update/{userId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateUser(@PathVariable Long userId, @Validated @RequestPart("updateUser") UserDTO updateUser,
                                         @RequestPart(value = "file", required = false) MultipartFile file) throws JsonProcessingException {
-
 
 
         if (file != null && !file.isEmpty()) {
@@ -117,7 +113,7 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasAnyRole('USER','ADMIN','DEVELOPER')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','ONLY_CONSULT')")
     @GetMapping("{username}/photo")
     public ResponseEntity<byte[]> getUserPhoto(@PathVariable String username) throws IOException {
         byte[] imageBytes = userApiPort.getPhotoByUsername(username);
@@ -148,7 +144,7 @@ public class UserController {
                 throw new RuntimeException("Error al guardar imagen de perfil");
             }
 
-            }
+        }
         return this.file_path;
 
     }

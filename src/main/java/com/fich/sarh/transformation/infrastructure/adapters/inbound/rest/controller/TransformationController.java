@@ -37,7 +37,7 @@ public class TransformationController {
 
         var exist = transformationApiPort.existByResolutionNumber(request.getResolutionNumber());
 
-        logger.error("VALOR DE LA TRANSFORMACION  " + exist + "   " + request.getResolutionNumber()) ;
+        logger.error("VALOR DE LA TRANSFORMACION  " + exist + "   " + request.getResolutionNumber());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 restMapper.toTransformationResponse(
@@ -49,12 +49,12 @@ public class TransformationController {
     }
 
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ONLY_CONSULT')")
     public List<TransformationResponse> getAll() {
 
         return transformationApiPort
                 .findAllTransformations().stream().map(
-                       restMapper::toTransformationResponse
+                        restMapper::toTransformationResponse
                 ).toList();
     }
 

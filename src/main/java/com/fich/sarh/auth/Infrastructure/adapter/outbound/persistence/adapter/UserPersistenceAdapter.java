@@ -25,12 +25,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @WebAdapter
 
 @Log4j2
-public class UserPersistenceAdapter implements  UserSpiPort {
+public class UserPersistenceAdapter implements UserSpiPort {
 
 
     public UserPersistenceAdapter(@Lazy PasswordEncoder passwordEncoder,
@@ -90,7 +93,7 @@ public class UserPersistenceAdapter implements  UserSpiPort {
 
         var userEntity = mapper.toUserEntity(createUser);
 
-        return   mapper.toUserDTO(userRepository.save(userEntity)) ;
+        return mapper.toUserDTO(userRepository.save(userEntity));
     }
 
     @Override
@@ -126,7 +129,7 @@ public class UserPersistenceAdapter implements  UserSpiPort {
 
         try {
             Path path = Paths.get(basePath, photoProfile).normalize();
-            log.info("ESTA ES LA FOTO DE PERFIL "+ basePath + "   " + path);
+            log.info("ESTA ES LA FOTO DE PERFIL " + basePath + "   " + path);
             return Files.readAllBytes(Paths.get(path.toString()));
         } catch (IOException e) {
             throw new RuntimeException("Error al leer la foto " + e.getMessage());
@@ -141,8 +144,13 @@ public class UserPersistenceAdapter implements  UserSpiPort {
     }
 
     @Override
+    public boolean existsByUsernameIgnoreCaseAndIdNot(String username, Long id) {
+        return userRepository.existsByUsernameIgnoreCaseAndIdNot(username, id);
+    }
+
+    @Override
     public void sendEmailResetPassword(String newPassword, String email) {
-            userService.sendEmailResetPassword(newPassword, email);
+        userService.sendEmailResetPassword(newPassword, email);
     }
 
     @Override

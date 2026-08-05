@@ -1,14 +1,11 @@
-	package com.fich.sarh;
+package com.fich.sarh;
 
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
-    import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
-@SpringBootApplication(
-
-)
-
+@SpringBootApplication
 public class SarhApplication {//implements WebMvcConfigurer {
 
 /*	private final MovementRepository retrieveServicePort;
@@ -18,9 +15,9 @@ public class SarhApplication {//implements WebMvcConfigurer {
 	}*/
 
 
-	public static void main(String[] args) {
-		SpringApplication.run(SarhApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SarhApplication.class, args);
+    }
 
 	/*@Override
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {

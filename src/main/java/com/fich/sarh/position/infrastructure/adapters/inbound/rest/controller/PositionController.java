@@ -5,7 +5,6 @@ import com.fich.sarh.position.domain.model.Position;
 import com.fich.sarh.position.domain.model.PositionCommand;
 import com.fich.sarh.position.domain.model.PositionDto;
 import com.fich.sarh.position.domain.ports.inbound.PositionApiPort;
-import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
 import com.fich.sarh.position.infrastructure.adapters.inbound.rest.model.response.PositionResponse;
 import com.fich.sarh.position.infrastructure.adapters.output.persistence.mapper.PositionRestMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,49 +25,49 @@ import java.util.Optional;
 public class PositionController {
 
     private final PositionApiPort positionApiPort;
-   // private final PositionRetrieveServicePort retrieveService;
-   // private final PositionSaveServicePort saveService;
-   // private final PositionUpdateServicePort updateService;
-
+    // private final PositionRetrieveServicePort retrieveService;
+    // private final PositionSaveServicePort saveService;
+    // private final PositionUpdateServicePort updateService;
 
 
     @GetMapping("origin/{id_generatePosition}")
     @PreAuthorize("hasRole('USER')")
     public List<PositionDto> findOriginPosition(@PathVariable Long id_generatePosition) {
-       return  positionApiPort.findOriginPositions(id_generatePosition);
-      //   return retrieveService.getOriginPositions(id_generatePosition);
+        return positionApiPort.findOriginPositions(id_generatePosition);
+        //   return retrieveService.getOriginPositions(id_generatePosition);
     }
 
     @GetMapping("available")
     @PreAuthorize("hasRole('USER')")
-    public List<PositionDto> findAvailablePositions(){
-        return  positionApiPort.findFreePositions(); // getFreePositions();
+    public List<PositionDto> findAvailablePositions() {
+        return positionApiPort.findFreePositions(); // getFreePositions();
     }
 
     @GetMapping("allposition")
-    @PreAuthorize("hasRole('USER')")
-    public List<PositionResponse> findAll(){
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
+    public List<PositionResponse> findAll() {
         log.info("CANTIDAD DE CARGOS " + positionApiPort.findAllPosition().size());
         return PositionRestMapper.INSTANCE.toPositionResponseList(positionApiPort.findAllPosition());
     }
 
     @GetMapping("vacant")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PositionDto> findVacantPositions() {
         return positionApiPort.findVacantPositions();
     }
+
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PositionDto> findAllPosition() {
         return positionApiPort.findAllPositions();
     }
 
     @GetMapping("{id}")
     @PreAuthorize("hasRole('USER')")
-    public Position getPositionById(@PathVariable Long id){
+    public Position getPositionById(@PathVariable Long id) {
         Optional<Position> positionFound = positionApiPort.findPositionById(id);
         log.info("CARGOS ENCONTRADO ????" + positionFound.get());
-        if(!positionFound.isPresent()) {
+        if (!positionFound.isPresent()) {
             return null;
         }
         return positionFound.get();
@@ -76,16 +75,16 @@ public class PositionController {
 
     @PostMapping("create")
     @PreAuthorize("hasRole('USER')")
-    public Position save(@RequestBody PositionCommand command){
+    public Position save(@RequestBody PositionCommand command) {
         //infoLogger.info("SOLICITUD de CARGO " + command.getOriginPositionIds());
-        return  positionApiPort.addPosition(command);  //saveService.savePosition(command);
+        return positionApiPort.addPosition(command);  //saveService.savePosition(command);
     }
 
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> update(@PathVariable Long id,@RequestBody PositionCommand request){
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PositionCommand request) {
         log.info("VALOR ID CARGO " + request);
-        return  new ResponseEntity<>(positionApiPort.updateFullPosition(id, request), HttpStatus.OK);
+        return new ResponseEntity<>(positionApiPort.updateFullPosition(id, request), HttpStatus.OK);
     }
 
    /* @PostMapping("create")

@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
 
-   // private final UserResetPasswordSpiPort userResetPasswordSpiPort;
-     private final UserApiPort userApiPort;
+    // private final UserResetPasswordSpiPort userResetPasswordSpiPort;
+    private final UserApiPort userApiPort;
 
-    @PreAuthorize("hasAnyRole('ADMIN','DEVELOPER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("user/{id}/reset-password")
-    public ResponseEntity<?> resetPassword(@PathVariable Long id){
+    public ResponseEntity<?> resetPassword(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 userApiPort.resetPasswordByAdmin(id)
         );

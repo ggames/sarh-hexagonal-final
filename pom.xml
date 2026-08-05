@@ -39,6 +39,7 @@
             <version>3.3.7</version>
         </dependency>
 
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -66,17 +67,17 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-       <dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.8</version>
         </dependency>
-    <!--    <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>3.5.7</version>
-            <scope>compile</scope>
-        </dependency>-->
+        <!--    <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>3.5.7</version>
+                <scope>compile</scope>
+            </dependency>-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -90,22 +91,21 @@
             <version>4.2.2</version>
         </dependency>
 
-    <!--    <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.5</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.11.2</version>
-        </dependency>-->
-
+        <!--    <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.11.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.11.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.11.2</version>
+            </dependency>-->
 
 
         <dependency>
@@ -125,8 +125,7 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.18.0</version>
         </dependency>
-
-
+       
         <!-- Dependencia de POI Excel -->
         <dependency>
             <groupId>org.apache.poi</groupId>

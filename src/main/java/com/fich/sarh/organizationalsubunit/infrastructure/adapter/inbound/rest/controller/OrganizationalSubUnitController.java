@@ -34,44 +34,44 @@ public class OrganizationalSubUnitController {
     Logger logger = LoggerFactory.getLogger(OrganizationalSubUnitController.class);
 
 
-@GetMapping("{id}")
-@PreAuthorize("hasRole('USER')")
- public OrganizationalSubUnit findOrganizationalSubUnitById(@PathVariable Long id){
+    @GetMapping("{id}")
+    @PreAuthorize("hasRole('USER')")
+    public OrganizationalSubUnit findOrganizationalSubUnitById(@PathVariable Long id) {
         Optional<OrganizationalSubUnit> organizationalSubunit = subunitApiPort.findOrganizationalSubunitById(id);
 
-        if(!organizationalSubunit.isPresent()) return null;
+        if (!organizationalSubunit.isPresent()) return null;
 
         return organizationalSubunit.get();
- }
+    }
 
-    @PreAuthorize("hasAnyRole('USER', 'INVITED')")
+    @PreAuthorize("hasAnyRole('USER', 'ONLY_CONSULT')")
     @GetMapping("all")
-    public List<OrganizationalSubUnit> findAll(){
+    public List<OrganizationalSubUnit> findAll() {
 
 
-        return  subunitApiPort.findAllOrganizationalSubUnits();
+        return subunitApiPort.findAllOrganizationalSubUnits();
 
     }
 
     @PostMapping("create")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> save(@RequestBody @Valid OrganizationalSubunitRequest request){
+    public ResponseEntity<?> save(@RequestBody @Valid OrganizationalSubunitRequest request) {
         OrganizationalSubUnit subUnit = subunitApiPort.saveOrganizationSubunit(request);
 
-        return  ResponseEntity.status(HttpStatus.CREATED).body(
-                        subUnit);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                subUnit);
     }
 
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
-    public OrganizationalSubUnitResponse update(@PathVariable Long id, @RequestBody OrganizationalSubUnit request){
+    public OrganizationalSubUnitResponse update(@PathVariable Long id, @RequestBody OrganizationalSubUnit request) {
 
-        return restMapper.toOrganizationalSubUnit(subunitApiPort.updateOrganizationSubunit(id,request));
+        return restMapper.toOrganizationalSubUnit(subunitApiPort.updateOrganizationSubunit(id, request));
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'INVITED')")
+    @PreAuthorize("hasAnyRole('USER', 'ONLY_CONSULT')")
     @GetMapping("dto/all")
-    public List<OrganizationalSubUnitDTO> findAllDto(){
+    public List<OrganizationalSubUnitDTO> findAllDto() {
 
         return subunitApiPort.findAllOrganizationalSubUnitDTOs();
     }

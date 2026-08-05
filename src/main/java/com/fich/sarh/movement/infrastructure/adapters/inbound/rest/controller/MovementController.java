@@ -21,10 +21,9 @@ public class MovementController {
     private final MovementApiPort movementApiPort;
 
 
-
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
-    public List<MovementResponse> findAll(){
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
+    public List<MovementResponse> findAll() {
         return MovementRestMapper.INSTANCE.toMovementList(movementApiPort.findAllMovements());
     }
 }

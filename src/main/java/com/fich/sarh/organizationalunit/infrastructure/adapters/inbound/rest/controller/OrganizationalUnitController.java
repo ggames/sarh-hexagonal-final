@@ -28,34 +28,33 @@ public class OrganizationalUnitController {
     private final OrganizationalUnitRestMapper restMapper;
 
 
-
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
-    public List<OrganizationalUnitResponse> findAll(){
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
+    public List<OrganizationalUnitResponse> findAll() {
         List<OrganizationalUnitResponse> responses = organizationalApiPort.findAllOrganizationalUnits()
                 .stream().map(restMapper::toOrganizationalUnitResponse).toList();
         return responses;
     }
 
     @GetMapping("dto/all")
-    @PreAuthorize("hasAnyRole('USER', 'INVITED')")
-    public List<OrganizationalDTO> findOrganizationalDTO(){
+    @PreAuthorize("hasAnyRole('USER', 'ONLY_CONSULT')")
+    public List<OrganizationalDTO> findOrganizationalDTO() {
         return organizationalApiPort.findAllOrganizationDto();
     }
 
     @PostMapping("create")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> save(@Valid @RequestBody  OrganizationalUnitRequest request){
+    public ResponseEntity<?> save(@Valid @RequestBody OrganizationalUnitRequest request) {
         OrganizationalUnit organizationalUnit = organizationalApiPort
-                                                    .saveOrganizationUnit(request);
-                      return ResponseEntity.status(HttpStatus.CREATED).body(organizationalUnit);
+                .saveOrganizationUnit(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(organizationalUnit);
     }
 
     @GetMapping("{id}")
     @PreAuthorize("hasRole('USER')")
-    public OrganizationalUnit findOrganizationalUnitById(@PathVariable Long id){
+    public OrganizationalUnit findOrganizationalUnitById(@PathVariable Long id) {
         OrganizationalUnit organizational = organizationalApiPort
-                  .findOrganizationalunitById(id).orElseThrow(() -> new ResourceNotFoundException("Departamento no existente"));
+                .findOrganizationalunitById(id).orElseThrow(() -> new ResourceNotFoundException("Departamento no existente"));
 
 
         return organizational;
@@ -63,10 +62,10 @@ public class OrganizationalUnitController {
 
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody OrganizationalUnitRequest request){
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody OrganizationalUnitRequest request) {
         OrganizationalUnit organizationalUnit = organizationalApiPort
                 .updateOrganizationUnit(id,
-                request);
-        return ResponseEntity.status(HttpStatus.OK).body(organizationalUnit) ;
+                        request);
+        return ResponseEntity.status(HttpStatus.OK).body(organizationalUnit);
     }
 }

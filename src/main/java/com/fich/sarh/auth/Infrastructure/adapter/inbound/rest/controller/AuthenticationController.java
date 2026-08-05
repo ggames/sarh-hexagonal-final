@@ -36,16 +36,15 @@ public class AuthenticationController {
 
 
     @PostMapping(value = "log-in")
-    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest userRequest) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest userRequest) {
 
                     logger.info("LOGIN {} " + userRequest);
 
             AuthResponse authResponse = authApiPort.login(userRequest);
 
-            logger.info("AUTORIZADO RESPONSE " + authResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(authResponse);
 
-
-            return new ResponseEntity<>(authResponse, HttpStatus.OK);
+          //  return new ResponseEntity<>(authResponse, HttpStatus.OK);
 
 
 

@@ -2,13 +2,14 @@ package com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.cont
 
 import com.fich.sarh.common.WebAdapter;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
-// import com.fich.sarh.plantofpositions.application.ports.entrypoint.api.*;
-import com.fich.sarh.plantofpositions.domain.model.*;
+import com.fich.sarh.plantofpositions.domain.model.PlantFilter;
+import com.fich.sarh.plantofpositions.domain.model.PlantOfPositionCommand;
+import com.fich.sarh.plantofpositions.domain.model.PlantOfPositionDto;
+import com.fich.sarh.plantofpositions.domain.model.PlantProjectionDTO;
 import com.fich.sarh.plantofpositions.domain.ports.inbound.PlantPositionApiPort;
 import com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.mapper.PlantOfPositionRestMapper;
 import com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.model.request.PlantOfPositionRequest;
 import com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.model.response.PlantOfPositionResponse;
-
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +43,8 @@ public class PlantPositionController {
     // private final ExcelPlantReportApiPort excelReport;
 
 
-
-
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PlantOfPositionDto> findAll() {
 
         return plantApiPort.findAllPlantPositions();
@@ -56,9 +55,9 @@ public class PlantPositionController {
     @PreAuthorize("hasRole('USER')")
     public PlantOfPositionResponse findPlantPositionById(@PathVariable Long id) {
         var plantOfPositionFound = plantApiPort.findPlantPositionById(id)
-                .orElseThrow(()-> new ResourceNotFoundException(""));
+                .orElseThrow(() -> new ResourceNotFoundException(""));
 
-        return restMapper.toPlantOfPositionResponse(plantOfPositionFound) ;
+        return restMapper.toPlantOfPositionResponse(plantOfPositionFound);
     }
 
     @PostMapping("create")
@@ -70,13 +69,14 @@ public class PlantPositionController {
     }
 
     @GetMapping("search/")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public ResponseEntity<?> search(PlantFilter filter) {
 
         // Specification<PlantOfPositionEntity> specification = PlantSpecifications.createSpecification(filter);
         return new ResponseEntity<>(plantApiPort.search(filter), HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('USER')")
+
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     @PostMapping(
             value = "/report/excel",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -119,6 +119,7 @@ public class PlantPositionController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PlantOfPositionRequest request) {

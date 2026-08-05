@@ -15,20 +15,33 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(LoginFailedException.class)
+    public ResponseEntity<ApiResponse> handlerLoginFailedException(LoginFailedException exception, WebRequest webRequest) {
+        ApiResponse apiResponse = new ApiResponse(exception.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UserDisabledException.class)
+    public ResponseEntity<ApiResponse> handlerUserDisabledException(UserDisabledException exception, WebRequest webRequest) {
+        ApiResponse apiResponse = new ApiResponse(exception.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(BusinessRuleViolationException.class)
     public ResponseEntity<ApiResponse> handlerBusinessRuleViolationException(BusinessRuleViolationException exception,
-                                                                        WebRequest webRequest){
+                                                                             WebRequest webRequest) {
         ApiResponse apiResponse = new ApiResponse(exception.getMessage(), webRequest.getDescription(false));
-        return  new ResponseEntity<>(apiResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse> handlerResourceNotFoundException(ResourceNotFoundException ex, WebRequest webRequest){
+    public ResponseEntity<ApiResponse> handlerResourceNotFoundException(ResourceNotFoundException ex, WebRequest webRequest) {
         ApiResponse apiResponse = new ApiResponse(ex.getMessage(), webRequest.getDescription(false));
         return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex){
+    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
@@ -37,7 +50,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<?> handleUniqueConstraint(){
+    public ResponseEntity<?> handleUniqueConstraint() {
         return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya se encuentra registrado .....");
     }
 }

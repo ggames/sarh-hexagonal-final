@@ -10,10 +10,11 @@ import com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.entities.U
 import com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.mapper.RoleMapper;
 import com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.mapper.UserMapper;
 import com.fich.sarh.auth.Infrastructure.adapter.outbound.persistence.service.IUserService;
+import com.fich.sarh.common.SecurityUtils;
 import com.fich.sarh.common.UseCase;
+import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,13 +26,13 @@ import java.util.stream.Collectors;
 @UseCase
 @RequiredArgsConstructor
 @Log4j2
-public class UserApiUseCases  implements UserApiPort {
+public class UserApiUseCases implements UserApiPort {
 
     private final IUserService userService;
     private final RoleApiPort roleApiPort;
     private final PasswordEncoder passwordEncoder;
     private final UserSpiPort userSpiPort;
-   // private final UserDetailsService userDetailsService;
+    // private final UserDetailsService userDetailsService;
 
     private final UserMapper mapper;
     private final RoleMapper roleMapper;
@@ -41,9 +42,8 @@ public class UserApiUseCases  implements UserApiPort {
     public AuthResponse createUser(UserDTO createUser, MultipartFile file) {
         Set<String> roles = createUser.getRoles().stream()
                 .map(role ->
-                 role.getRoleEnum().name())
+                        role.getRoleEnum().name())
                 .collect(Collectors.toSet());
-
 
 
         String filename = userService.uploadProfilePicture(file);
@@ -63,9 +63,9 @@ public class UserApiUseCases  implements UserApiPort {
                 .roles(rolesEntities)
                 .build();
 
-       var userDto = mapper.toUserDTO(userEntity);
-        var  savedUser = userSpiPort.saveUser(userDto);
-         return new AuthResponse(
+        var userDto = mapper.toUserDTO(userEntity);
+        var savedUser = userSpiPort.saveUser(userDto);
+        return new AuthResponse(
                 savedUser.getId(),
                 savedUser.getUsername(),
                 "USER_CREATED",
@@ -95,13 +95,13 @@ public class UserApiUseCases  implements UserApiPort {
     @Override
     public UserDTO findByUsername(String username) {
         return userSpiPort.findByUsername(username)
-                .orElseThrow( ()-> new ResourceNotFoundException("Usuario"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario"));
     }
 
     @Override
     public UserDTO findUserById(Long userId) {
         return userSpiPort.findUserById(userId)
-                .orElseThrow(()-> new ResourceNotFoundException("Usuario"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario"));
     }
 
     @Override
@@ -116,8 +116,8 @@ public class UserApiUseCases  implements UserApiPort {
 
     @Override
     public void sendEmailResetPassword(String newPassword, String email) {
-          userSpiPort.sendEmailResetPassword(newPassword, email);
-     }
+        userSpiPort.sendEmailResetPassword(newPassword, email);
+    }
 
     @Override
     public String resetPasswordByAdmin(Long userId) {
@@ -132,12 +132,51 @@ public class UserApiUseCases  implements UserApiPort {
 
     @Override
     public UserDTO updateUser(Long userId, UserDTO dto) {
-        return userSpiPort.updateUser(userId, dto);
+
+        var user = userSpiPort.findUserById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario"));
+
+        String loggedUsername = SecurityUtils.getCurrentUsername();
+        if (loggedUsername == null || user.getUsername().equalsIgnoreCase(loggedUsername)) {
+            throw new BusinessRuleViolationException("No tiene permiso para modificar este usuario " + loggedUsername);
+        }
+
+        boolean isSameUser = user.getUsername().equalsIgnoreCase(loggedUsername);
+        if (isSameUser) {
+            throw new BusinessRuleViolationException("No tiene permismo para modificar este usuario");
+        }
+
+        if (dto.getUsername() != null) {
+
+            String newUsername = dto.getUsername().trim();
+            String currentUsername = user.getUsername();
+
+            if (!newUsername.equalsIgnoreCase(currentUsername) &&
+                    userSpiPort.existsByUsernameIgnoreCaseAndIdNot(newUsername, userId)) {
+                throw new BusinessRuleViolationException("El nombre de usuario ya se encuentra registrado");
+            }
+
+            user.setUsername(newUsername);
+        }
+
+        if (dto.getRoles() != null && !dto.getRoles().isEmpty()) {
+            user.setRoles(dto.getRoles());
+        }
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail().trim());
+        }
+
+        if (dto.getProfilePicturePath() != null && !dto.getProfilePicturePath().isBlank()) {
+            user.setProfilePicturePath(dto.getProfilePicturePath());
+        }
+
+
+        return userSpiPort.saveUser(user);
     }
 
     @Override
     public String uploadProfilePicture(MultipartFile file) {
-        return "";
+        return userSpiPort.uploadProfilePicture(file);
     }
 
 

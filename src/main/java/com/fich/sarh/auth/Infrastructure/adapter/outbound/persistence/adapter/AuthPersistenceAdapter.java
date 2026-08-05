@@ -8,11 +8,17 @@ import com.fich.sarh.auth.Infrastructure.adapter.configuration.security.jwt.JwtU
 import com.fich.sarh.auth.Infrastructure.adapter.inbound.rest.model.request.LoginRequest;
 import com.fich.sarh.auth.Infrastructure.adapter.inbound.rest.model.response.AuthResponse;
 import com.fich.sarh.common.WebAdapter;
+import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
+import com.fich.sarh.common.exceptions.LoginFailedException;
+import com.fich.sarh.common.exceptions.UserDisabledException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +34,7 @@ public class AuthPersistenceAdapter implements AuthSpiPort {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserSpiPort userSpiPort;
-   // private final UserDetailsService userDetailsService;
+    // private final UserDetailsService userDetailsService;
 
     @Override
     public AuthResponse login(LoginRequest request) {
@@ -47,7 +53,13 @@ public class AuthPersistenceAdapter implements AuthSpiPort {
 
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-
+// --- VALIDACIÓN DE ESTADO ---
+            log.warn("Intento de login de usuario deshabilitado: {}", request.username());
+            // Asumiendo que tu objeto CustomUserDetails tiene un método isEnabled()
+            if (!user.isEnabled()) {
+                log.warn("Intento de login de usuario deshabilitado: {}", request.username());
+                throw new BusinessRuleViolationException("La cuenta del usuario no está habilitada.");
+            }
 
             boolean mustChangePassword = user.getMustChangePassword();
             String accessToken = jwtUtils.createToken(authentication, mustChangePassword);
@@ -68,6 +80,14 @@ public class AuthPersistenceAdapter implements AuthSpiPort {
                     true
             );
 
+        } catch (BadCredentialsException e) {
+            log.error("Fallo la autenticacion para el usuario: {}", request.username(), e);
+            throw new LoginFailedException("Usuario o contraseña incorrectos", e);
+        } catch (DisabledException e) {
+            throw new UserDisabledException("Usuario inactivo ", e);
+        } catch (AuthenticationException failedException) {
+            log.error("Fallo la autenticacion para el usuario: {}", request.username(), failedException);
+            throw new LoginFailedException("Usuario o contraseña incorrectos", failedException);
         } catch (Exception e) {
 
             throw e;
@@ -80,15 +100,15 @@ public class AuthPersistenceAdapter implements AuthSpiPort {
         DecodedJWT decoded = jwtUtils.validateRefreshToken(refreshToken);
 
         String username = decoded.getSubject();
-        UserDetails userDetails =  userSpiPort.loadUserByUsername(username);
+        UserDetails userDetails = userSpiPort.loadUserByUsername(username);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities()
         );
 
-        String newAccessToken = jwtUtils.createToken(authentication,false);
+        String newAccessToken = jwtUtils.createToken(authentication, false);
 
-        Set<String> authorities =userDetails.getAuthorities().stream()
+        Set<String> authorities = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
 
 

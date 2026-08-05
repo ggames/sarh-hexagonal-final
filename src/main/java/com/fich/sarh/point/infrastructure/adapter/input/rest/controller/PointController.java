@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @WebAdapter
-@RestController @RequiredArgsConstructor
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/point")
 public class PointController {
 
@@ -26,14 +27,14 @@ public class PointController {
 
 
     @GetMapping("all")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public List<PointResponse> findAll(){
+    @PreAuthorize("hasAnyRole('ADMIN','USER','ONLY_CONSULT')")
+    public List<PointResponse> findAll() {
         return PointRestMapper.INSTANCE.toPointResponseList(pointApiPort.findAllPoints());
     }
 
     @PostMapping("create")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PointResponse> save(@RequestBody PointRequest request){
+    public ResponseEntity<PointResponse> save(@RequestBody PointRequest request) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 pointApiPort.savePoint(request)
@@ -48,15 +49,15 @@ public class PointController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("parity/{id}")
-    public void updatePointByType(@PathVariable Long id, @RequestBody ParityByPosition parity){
+    public void updatePointByType(@PathVariable Long id, @RequestBody ParityByPosition parity) {
         pointApiPort.applyParityByPositionType(id, parity.getAmountPositionNew());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("{id}")
-    public PointResponse fetchPointById(@PathVariable Long id){
+    public PointResponse fetchPointById(@PathVariable Long id) {
 
-        return restMapper.PointToPointResponse(pointApiPort.findPointById(id).get() );
+        return restMapper.PointToPointResponse(pointApiPort.findPointById(id).get());
     }
 
 

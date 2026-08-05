@@ -39,34 +39,34 @@ public class PositionPersistenceAdapter implements PositionSpiPort {
     @Override
     public List<PositionDto> findAllPositions() {
 
-        return  positionRepository.findAllPosition(); //List.of();
+        return positionRepository.findAllPosition(); //List.of();
     }
 
     @Override
     public List<Position> findAllPosition() {
-        return   positionMapper.toDtoList(positionRepository.findAll()) ; //List.of();
+        return positionMapper.toDtoList(positionRepository.findAll()); //List.of();
     }
 
     @Override
     public List<PositionDto> findVacantPositions() {
 
-        return  positionRepository.findVacantPositions(); //List.of();
+        return positionRepository.findVacantPositions(); //List.of();
     }
 
     @Override
     public List<PositionDto> findFreePositions() {
 
-        return  positionRepository.findFreePosition(); //List.of();
+        return positionRepository.findFreePosition(); //List.of();
     }
 
     @Override
     public List<Position> findAllByIdIn(List<Long> ids) {
-        return  positionMapper.toDtoList(positionRepository.findAllByIdIn(ids)) ; //List.of();
+        return positionMapper.toDtoList(positionRepository.findAllByIdIn(ids)); //List.of();
     }
 
     @Override
     public List<Position> findAvailablePosition(StatusOfPositions status) {
-        return  positionMapper.toDtoList(positionRepository.findAvailablePosition(status));  //List.of();
+        return positionMapper.toDtoList(positionRepository.findAvailablePosition(status));  //List.of();
     }
 
     @Override
@@ -82,22 +82,22 @@ public class PositionPersistenceAdapter implements PositionSpiPort {
 
         var entity = positionMapper.toEntity(position);
 
-        if(entity.getParentRelations() == null) {
+        if (entity.getParentRelations() == null) {
             entity.setParentRelations(new ArrayList<>());
         }
 
         var saved = positionRepository.save(entity);
-        return  positionMapper.toDto(saved);
+        return positionMapper.toDto(saved);
 
     }
 
     @Override
     public Position updatePosition(Position position) {
         PositionEntity entity = positionRepository.findById(position.getId())
-                .orElseThrow(()-> new ResourceNotFoundException("Cargo no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cargo no encontrado"));
 
         entity.setActive(position.isActive());
-        entity.setPoint( pointMapper.toEntity(position.getPoint()));
+        //  entity.setPoint( pointMapper.toEntity(position.getPoint()));
         entity.setCreationResolution(
                 transformationMapper.toEntity(position.getCreationResolution()));
         entity.setResolutionSuppression(
@@ -109,8 +109,8 @@ public class PositionPersistenceAdapter implements PositionSpiPort {
         // =============================================================
 
         entity.clearParents();
-        if(position.getParents() != null){
-            for (Position parent: position.getParents()){
+        if (position.getParents() != null) {
+            for (Position parent : position.getParents()) {
                 var parentEntity = positionRepository.findById(parent.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Cargo padre no encontrado"));
 

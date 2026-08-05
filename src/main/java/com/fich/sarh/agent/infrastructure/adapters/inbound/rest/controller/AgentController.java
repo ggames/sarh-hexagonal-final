@@ -32,11 +32,11 @@ public class AgentController {
     Logger logger = LoggerFactory.getLogger(AgentApiPort.class);
 
 
-  //  @CrossOrigin(origins = "http://localhost:5173")
-    @PreAuthorize("hasRole('USER')")
+    //  @CrossOrigin(origins = "http://localhost:5173")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     @GetMapping("all")
     public Page<AgentResponse> findAll(@RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "5") int size){
+                                       @RequestParam(defaultValue = "5") int size) {
 
         return AgentRestMapper.INSTANCE.toAgentResponsePage(agentApiPort.findAllAgent(page, size));
 
@@ -44,14 +44,14 @@ public class AgentController {
 
     @GetMapping("document/{document}")
     @PreAuthorize("hasRole('USER')")
-    public AgentResponse findAgentByDocument(@PathVariable String document ){
-        return  AgentRestMapper.INSTANCE.AgentToAgentResponse(agentApiPort.findByDocument(document));
+    public AgentResponse findAgentByDocument(@PathVariable String document) {
+        return AgentRestMapper.INSTANCE.AgentToAgentResponse(agentApiPort.findByDocument(document));
     }
 
     @GetMapping("search/{query}")
     @PreAuthorize("hasRole('USER')")
-    public List<AgentResponse> findAgentByLastnameOrFirstname(@PathVariable String query){
-        return  AgentRestMapper.INSTANCE.AgentListToAgentResponseList(agentApiPort.findByLastname(query));
+    public List<AgentResponse> findAgentByLastnameOrFirstname(@PathVariable String query) {
+        return AgentRestMapper.INSTANCE.AgentListToAgentResponseList(agentApiPort.findByLastname(query));
     }
 
     @GetMapping("{id}")
@@ -61,22 +61,21 @@ public class AgentController {
     }
 
 
-
     @PostMapping("create")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> save(@RequestBody @Valid Agent request){
-       return ResponseEntity.status(HttpStatus.CREATED)
-               .body(
-                       agentApiPort.addAgent(request)
-               );
+    public ResponseEntity<?> save(@RequestBody @Valid Agent request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(
+                        agentApiPort.addAgent(request)
+                );
 
     }
 
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody AgentRequest request){
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody AgentRequest request) {
         logger.info("AGENTE ACTUALIZADO " + request + " ID " + id);
         return ResponseEntity.status(HttpStatus.OK).body(agentApiPort.updateAgent(id,
-                restMapper.AgentRequestToAgent(request) )) ;
+                restMapper.AgentRequestToAgent(request)));
     }
 }

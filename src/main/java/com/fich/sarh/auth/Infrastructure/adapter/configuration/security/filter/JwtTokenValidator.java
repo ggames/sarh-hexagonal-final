@@ -57,7 +57,48 @@ public class JwtTokenValidator extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String authHeader =
+                request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (authHeader != null &&
+                authHeader.startsWith("Bearer ")) {
+
+            String token = authHeader.substring(7);
+
+            if (jwtUtils.isTokenValid(token)) {
+
+                DecodedJWT jwt =
+                        jwtUtils.validateToken(token);
+
+                CustomUserDetails userDetails =
+                        jwtUtils.buildUserDetails(jwt);
+
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(auth);
+
+                logger.info(
+                        "Usuario autenticado: {}",
+                        userDetails.getUsername()
+                );
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
+    /*protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
 
@@ -94,78 +135,5 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         }
 
 
-    }
+    } */
 }
-/*
-   protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
-
-
-        String path = request.getRequestURI();
-
-        if (path.startsWith("/auth/")) {
-            DatabaseContextHolder.setDatabaseType(DatabaseType.AUTH);
-            logger.info(">>> USING AUTH DATABASE FOR {}", path);
-        } else {
-            DatabaseContextHolder.setDatabaseType(DatabaseType.PROD);
-            logger.info(">>> USING PROD DATABASE FOR {}", path);
-        }
-
-        try {
-            logger.error(">>> JWT FILTER EJECUTADO PARA {}", request.getRequestURI());
-
-            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            String token = authHeader.substring(7);
-
-            if (!jwtUtils.isTokenValid(token)) {
-                logger.warn("Token no válido o expirado para URI: {}", request.getRequestURI());
-                // No se establece la autenticación, el SecurityConfig lo manejará.
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            try {
-
-                // 3. Decodificar el JWT y construir CustomUserDetails
-                DecodedJWT decodedJWT = jwtUtils.validateToken(token);
-
-                // 4. Construir CustomUserDetails y el objeto Authentication
-                CustomUserDetails userDetails = jwtUtils.buildUserDetails(decodedJWT);
-
-                // El token de acceso solo debería llegar a rutas que requieren autenticación,
-                // pero si la validación JWT es exitosa, se considera auténtico.
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
-                        null,
-                        userDetails.getAuthorities());
-
-                // 5. Establecer la autenticación en el SecurityContext
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                logger.debug("Usuario autenticado: {}", userDetails.getUsername());
-
-            } catch (JWTVerificationException e) {
-                // Esto es redundante si se usa isTokenValid, pero se mantiene para robustez.
-                logger.warn("Error al validar el token (aunque isTokenValid pasó): {}", e.getMessage());
-                // No se establece la autenticación, se permite seguir a la cadena.
-            }
-
-
-        } finally {
-
-            filterChain.doFilter(request, response);
-
-            // limpiar contexto (MUY IMPORTANTE)
-            DatabaseContextHolder.clear();
-        }
-
-
-
-    }
- */
