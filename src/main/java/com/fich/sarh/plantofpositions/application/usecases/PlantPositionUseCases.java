@@ -10,7 +10,7 @@ import com.fich.sarh.plantofpositions.application.handlers.PlantHistoryHandler;
 import com.fich.sarh.plantofpositions.domain.model.*;
 import com.fich.sarh.plantofpositions.domain.ports.inbound.PlantPositionApiPort;
 import com.fich.sarh.plantofpositions.domain.ports.outbound.PlantPositionSpiPort;
-import com.fich.sarh.plantofpositions.infrastructure.adapters.outbound.persistence.service.PlantPositionService;
+import com.fich.sarh.plantofpositions.domain.service.PlantPositionService;
 import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
