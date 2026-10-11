@@ -1,8 +1,15 @@
 HELP.md
-#target/
+target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+# User uploads & generated files
+uploads/
+*.xlsx
+
+# Dead/temporary files
+*.java2
 
 ### STS ###
 .apt_generated
