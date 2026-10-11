@@ -34,9 +34,10 @@ public class PointController {
     @PostMapping("create")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PointResponse> save(@RequestBody PointRequest request){
-
+        Point domainModel = restMapper.PointRequestToPoint(request);
+        Point saved = pointApiPort.savePoint(domainModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                pointApiPort.savePoint(request)
+                restMapper.PointToPointResponse(saved)
         );
     }
 

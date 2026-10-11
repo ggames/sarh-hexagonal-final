@@ -5,8 +5,6 @@ import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.planthistory.domain.model.PlantHistory;
 import com.fich.sarh.planthistory.domain.ports.inbound.PlantHistoryApiPort;
 import com.fich.sarh.planthistory.domain.ports.outbound.PlantHistorySpiPort;
-import com.fich.sarh.planthistory.infrastructure.adapters.inbound.rest.mapper.PlantHistoryRestMapper;
-import com.fich.sarh.planthistory.infrastructure.adapters.inbound.rest.model.request.PlantHistoryRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +16,6 @@ import java.util.Optional;
 public class PlantHistoryUseCases implements PlantHistoryApiPort {
 
     private final PlantHistorySpiPort plantHistorySpiPort;
-    private final PlantHistoryRestMapper mapperRest;
 
     @Override
     public List<PlantHistory> findAllPlantHistory() {
@@ -50,13 +47,14 @@ public class PlantHistoryUseCases implements PlantHistoryApiPort {
     }
 
     @Override
-    public PlantHistory savePlantHistory(PlantHistoryRequest plantHistory) {
-        PlantHistory history = mapperRest.toPlantHistory(plantHistory);
-        return plantHistorySpiPort.savePlantHistory(history);
+    @Transactional
+    public PlantHistory savePlantHistory(PlantHistory plantHistory) {
+        return plantHistorySpiPort.savePlantHistory(plantHistory);
     }
 
-    @Override @Transactional
-    public PlantHistory updatePlantHistory(Long id, PlantHistoryRequest plantHistory) {
+    @Override
+    @Transactional
+    public PlantHistory updatePlantHistory(Long id, PlantHistory plantHistory) {
         PlantHistory history = plantHistorySpiPort.findPlantHistoryById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Historia de planta no encontrada"));
 

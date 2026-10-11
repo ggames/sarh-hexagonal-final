@@ -2,7 +2,7 @@ package com.fich.sarh.planthistory.infrastructure.adapters.inbound.rest.controll
 
 import com.fich.sarh.common.WebAdapter;
 import com.fich.sarh.planthistory.domain.model.PlantHistory;
-import com.fich.sarh.planthistory.domain.ports.outbound.PlantHistorySpiPort;
+import com.fich.sarh.planthistory.domain.ports.inbound.PlantHistoryApiPort;
 import com.fich.sarh.planthistory.infrastructure.adapters.inbound.rest.mapper.PlantHistoryRestMapper;
 import com.fich.sarh.planthistory.infrastructure.adapters.inbound.rest.model.response.PlantHistoryResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/planthistory")
 public class PlantHistoryController {
 
-    private final PlantHistorySpiPort plantHistorySpiPort;
+    private final PlantHistoryApiPort plantHistoryApiPort;
     private final PlantHistoryRestMapper mapperRest;
 
 
@@ -27,23 +27,19 @@ public class PlantHistoryController {
     @GetMapping("{id}")
     @PreAuthorize("hasRole('USER')")
     public List<PlantHistoryResponse> findPlantHistoryByPlantId(@PathVariable Long id){
-        return PlantHistoryRestMapper.INSTANCE.toPlantHistoryResponseList(plantHistorySpiPort.findPlantHistoryByPlantId(id));
+        return PlantHistoryRestMapper.INSTANCE.toPlantHistoryResponseList(plantHistoryApiPort.findPlantHistoryByPlantId(id));
     }
 
     @GetMapping("history/{id}")
     @PreAuthorize("hasRole('USER')")
     public PlantHistory findPlantByIdActive(@PathVariable  Long id){
-        return plantHistorySpiPort.findPlantByIdActive(id).get();
+        return plantHistoryApiPort.findPlantByIdActive(id).orElse(null);
     }
 
     @GetMapping("top/{id}")
     @PreAuthorize("hasRole('USER')")
     public PlantHistory findTopByPlant(@PathVariable Long id){
-        PlantHistory plantHistory = plantHistorySpiPort.findTopByPlantIdOrderHistoryIdDesc(id);
-        if(plantHistory == null) {
-            return null;
-        }
-        return plantHistory;
+        return plantHistoryApiPort.findTopByPlantIdOrderHistoryIdDesc(id);
     }
 
 }

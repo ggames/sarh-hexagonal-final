@@ -2,14 +2,14 @@ package com.fich.sarh.position.application.strategy;
 
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.organizationalunit.domain.model.OrganizationalUnit;
-import com.fich.sarh.organizationalunit.domain.ports.outbound.OrganizationalunitSpiPort;
+import com.fich.sarh.organizationalunit.domain.ports.inbound.OrganizationalunitApiPort;
 import com.fich.sarh.point.domain.model.Point;
-import com.fich.sarh.point.domain.ports.outbound.PointSpiPort;
+import com.fich.sarh.point.domain.ports.inbound.PointApiPort;
 import com.fich.sarh.position.domain.model.Position;
 import com.fich.sarh.position.domain.model.PositionCommand;
 import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
-import com.fich.sarh.transformation.application.ports.persistence.TransformationRetrieveSpiPort;
 import com.fich.sarh.transformation.domain.model.Transformation;
+import com.fich.sarh.transformation.domain.ports.inbound.TransformationApiPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +20,9 @@ import java.util.Optional;
 public class FullUpdatePositionStrategy implements UpdatePositionStrategy<PositionCommand>{
 
     private final PositionSpiPort positionSpiPort;
-
-    // REEMPLAZAR CUANDO SE FACTORICE POINT
-    private final PointSpiPort pointSpiPort;
-    private final TransformationRetrieveSpiPort transformationSpiPort;
-    private final OrganizationalunitSpiPort organizationalUnitSpiPort;
+    private final PointApiPort pointApiPort;
+    private final TransformationApiPort transformationApiPort;
+    private final OrganizationalunitApiPort organizationalUnitApiPort;
 
 
 
@@ -38,15 +36,14 @@ public class FullUpdatePositionStrategy implements UpdatePositionStrategy<Positi
 
 
 
-        var point = pointSpiPort.findPointById(command.getPoint())
+        var point = pointApiPort.findPointById(command.getPoint())
                 .orElseThrow(()->  new ResourceNotFoundException("El Tipo de cargo no existe"));
 
+        // findTransformationById lanza ResourceNotFoundException internamente si no existe
+        var transformation = transformationApiPort
+                .findTransformationById(command.getResolutionTransformation());
 
-        var transformation = transformationSpiPort
-                .findById(command.getResolutionTransformation())
-                .orElseThrow(()-> new ResourceNotFoundException("La resolución de transformación no existe"));
-
-        var organizationunit = organizationalUnitSpiPort
+        var organizationunit = organizationalUnitApiPort
                 .findOrganizationalunitById(command.getResolutionTransformation())
         .orElseThrow(()-> new ResourceNotFoundException("No existe la unidad Organizativa indicada"));
 

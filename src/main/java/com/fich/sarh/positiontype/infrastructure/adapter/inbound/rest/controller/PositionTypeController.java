@@ -34,19 +34,18 @@ public class PositionTypeController {
 
     @PostMapping("create")
     public ResponseEntity<PositionTypeResponse> save(@RequestBody PositionTypeRequest request){
-
+        PositionType domainModel = restMapper.toPositionType(request);
+        PositionType saved = positionTypeApiPort.savePositionType(domainModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                restMapper.toPositionTypeResponse(
-                        positionTypeApiPort.savePositionType(request))
+                restMapper.toPositionTypeResponse(saved)
         );
     }
 
     @PutMapping("update/{id}")
     public PositionTypeResponse update(@PathVariable Long id, @RequestBody PositionTypeRequest request ){
-        return restMapper.toPositionTypeResponse(
-                positionTypeApiPort.updatePositionType(id,
-                        request)
-        );
+        PositionType domainModel = restMapper.toPositionType(request);
+        PositionType updated = positionTypeApiPort.updatePositionType(id, domainModel);
+        return restMapper.toPositionTypeResponse(updated);
     }
 
 }

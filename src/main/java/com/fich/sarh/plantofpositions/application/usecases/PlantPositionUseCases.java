@@ -10,11 +10,9 @@ import com.fich.sarh.plantofpositions.application.handlers.PlantHistoryHandler;
 import com.fich.sarh.plantofpositions.domain.model.*;
 import com.fich.sarh.plantofpositions.domain.ports.inbound.PlantPositionApiPort;
 import com.fich.sarh.plantofpositions.domain.ports.outbound.PlantPositionSpiPort;
-import com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.mapper.PlantOfPositionRestMapper;
-import com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.model.request.PlantOfPositionRequest;
-import com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.model.response.PlantOfPositionResponse;
 import com.fich.sarh.plantofpositions.infrastructure.adapters.outbound.persistence.service.PlantPositionService;
 import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.io.ByteArrayInputStream;
@@ -30,7 +28,6 @@ public class PlantPositionUseCases implements PlantPositionApiPort {
     private final AgentSpiPort agentSpiPort;
     private final OrganizationalSubunitSpiPort subunitSpiPort;
 
-    private final PlantOfPositionRestMapper restMapper;
     private final PlantPositionService plantPositionService;
 
     private final PlantPositionFactory factory;
@@ -56,7 +53,8 @@ public class PlantPositionUseCases implements PlantPositionApiPort {
     }
 
     @Override
-    public PlantOfPositionResponse addPlantOfPosition(PlantOfPositionCommand request) {
+    @Transactional
+    public PlantOfPosition addPlantOfPosition(PlantOfPositionCommand request) {
 
        plantPositionService.validateActivePlant(request);
 
@@ -77,7 +75,7 @@ public class PlantPositionUseCases implements PlantPositionApiPort {
 
        plantHistoryHandler.register(plant, request.getDateFrom(), request.getCurrentStatusID());
 
-        return restMapper.toPlantOfPositionResponse(plant);
+       return plant;
     }
 
     @Override
@@ -86,7 +84,8 @@ public class PlantPositionUseCases implements PlantPositionApiPort {
     }
 
     @Override
-    public PlantOfPositionResponse updatePlantOfPosition(Long id, PlantOfPositionRequest request) {
+    @Transactional
+    public PlantOfPosition updatePlantOfPosition(Long id, PlantOfPosition request) {
         var entity = plantPositionSpiPort.findPlantPositionById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("La plaza seleccionada no fue encontrada"));
         entity.setPosition(request.getPosition());
@@ -94,6 +93,6 @@ public class PlantPositionUseCases implements PlantPositionApiPort {
         entity.setCharacterplantID(request.getCharacterplantID());
         entity.setCurrentStatusID(request.getCurrentStatusID());
         entity.setOrganizationalSubUnit(request.getOrganizationalSubUnit());
-        return null;
+        return plantPositionSpiPort.savePlantOfPosition(entity);
     }
 }

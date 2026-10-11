@@ -5,19 +5,17 @@ import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.point.domain.model.Point;
 import com.fich.sarh.point.domain.ports.inbound.PointApiPort;
 import com.fich.sarh.point.domain.ports.outbound.PointSpiPort;
-import com.fich.sarh.point.infrastructure.adapter.input.rest.model.request.PointRequest;
-import com.fich.sarh.point.infrastructure.adapter.input.rest.model.response.PointResponse;
-import com.fich.sarh.point.infrastructure.adapter.output.persistence.mapper.PointRestMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
+
 @UseCase
 @RequiredArgsConstructor
 public class PointUseCases implements PointApiPort {
 
     private final PointSpiPort pointSpiPort;
-    private final PointRestMapper restMapper;
 
     @Override
     public List<Point> findAllPoints() {
@@ -30,14 +28,14 @@ public class PointUseCases implements PointApiPort {
     }
 
     @Override
-    public PointResponse savePoint(PointRequest request) {
-        var point = restMapper.PointRequestToPoint(request);
-        var saved = pointSpiPort.savePoint(point);
-        return restMapper.PointToPointResponse(saved);
+    @Transactional
+    public Point savePoint(Point request) {
+        return pointSpiPort.savePoint(request);
     }
 
     @Override
-    public PointResponse updatePoint(Long id, PointRequest request) {
+    @Transactional
+    public Point updatePoint(Long id, Point request) {
         var point = pointSpiPort.findPointById(id)
                 .orElseThrow( () -> new ResourceNotFoundException("No existe el tipo de cargo seleccionado"));
             point.setAmountPoint(request.getAmountPoint());
@@ -45,8 +43,7 @@ public class PointUseCases implements PointApiPort {
             point.setDedication(request.getDedication());
             point.setPositionCode(request.getPositionCode());
             point.setNamePosition(request.getNamePosition());
-        var updated = pointSpiPort.updateSave(point);
-        return restMapper.PointToPointResponse(updated);
+        return pointSpiPort.updateSave(point);
     }
 
     @Override

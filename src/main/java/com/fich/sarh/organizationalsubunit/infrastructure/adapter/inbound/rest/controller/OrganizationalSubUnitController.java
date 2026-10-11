@@ -56,10 +56,10 @@ public class OrganizationalSubUnitController {
     @PostMapping("create")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> save(@RequestBody @Valid OrganizationalSubunitRequest request){
-        OrganizationalSubUnit subUnit = subunitApiPort.saveOrganizationSubunit(request);
+        OrganizationalSubUnit domainModel = restMapper.toOrganizationalSubUnit(request);
+        OrganizationalSubUnit subUnit = subunitApiPort.saveOrganizationSubunit(domainModel);
 
-        return  ResponseEntity.status(HttpStatus.CREATED).body(
-                        subUnit);
+        return  ResponseEntity.status(HttpStatus.CREATED).body(subUnit);
     }
 
     @PutMapping("update/{id}")

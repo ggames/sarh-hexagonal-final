@@ -1,9 +1,11 @@
 package com.fich.sarh.positiontype.application.usecases;
 
 import com.fich.sarh.common.UseCase;
+import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.positiontype.domain.model.PositionType;
 import com.fich.sarh.positiontype.domain.ports.inbound.PositionTypeApiPort;
-import com.fich.sarh.positiontype.infrastructure.adapter.inbound.rest.model.request.PositionTypeRequest;
+import com.fich.sarh.positiontype.domain.ports.outbound.PositionTypeSpiPort;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -12,23 +14,31 @@ import java.util.Optional;
 @UseCase
 @RequiredArgsConstructor
 public class PositionTypeUseCases implements PositionTypeApiPort {
+
+    private final PositionTypeSpiPort positionTypeSpiPort;
+
     @Override
     public List<PositionType> findAllPositionType() {
-        return List.of();
+        return positionTypeSpiPort.findAllPositionType();
     }
 
     @Override
     public Optional<PositionType> findPositionTypeById(Long id) {
-        return Optional.empty();
+        return positionTypeSpiPort.findPositionTypeById(id);
     }
 
     @Override
-    public PositionType savePositionType(PositionTypeRequest command) {
-        return null;
+    @Transactional
+    public PositionType savePositionType(PositionType command) {
+        return positionTypeSpiPort.savePositionType(command);
     }
 
     @Override
-    public PositionType updatePositionType(Long id, PositionTypeRequest command) {
-        return null;
+    @Transactional
+    public PositionType updatePositionType(Long id, PositionType command) {
+        PositionType existing = positionTypeSpiPort.findPositionTypeById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de cargo no encontrado"));
+        existing.setNamePosition(command.getNamePosition());
+        return positionTypeSpiPort.savePositionType(existing);
     }
 }

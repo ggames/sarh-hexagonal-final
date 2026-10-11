@@ -63,10 +63,9 @@ public class PlantPositionController {
 
     @PostMapping("create")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> save(@RequestBody PlantOfPositionCommand request) {
-
-        return new ResponseEntity<>(plantApiPort.addPlantOfPosition(request), HttpStatus.CREATED);
-
+    public ResponseEntity<PlantOfPositionResponse> save(@RequestBody PlantOfPositionCommand request) {
+        PlantOfPosition created = plantApiPort.addPlantOfPosition(request);
+        return new ResponseEntity<>(restMapper.toPlantOfPositionResponse(created), HttpStatus.CREATED);
     }
 
     @GetMapping("search/")
@@ -121,11 +120,10 @@ public class PlantPositionController {
     }
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PlantOfPositionRequest request) {
-
-        return new ResponseEntity<>(plantApiPort.updatePlantOfPosition(id, request), HttpStatus.OK);
-
-
+    public ResponseEntity<PlantOfPositionResponse> update(@PathVariable Long id, @RequestBody PlantOfPositionRequest request) {
+        PlantOfPosition domainModel = restMapper.toPlantOfPosition(request);
+        PlantOfPosition updated = plantApiPort.updatePlantOfPosition(id, domainModel);
+        return new ResponseEntity<>(restMapper.toPlantOfPositionResponse(updated), HttpStatus.OK);
     }
 }
 

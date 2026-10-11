@@ -5,8 +5,7 @@ import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.transformation.domain.model.Transformation;
 import com.fich.sarh.transformation.domain.ports.inbound.TransformationApiPort;
 import com.fich.sarh.transformation.domain.ports.outbound.TransformationSpiPort;
-import com.fich.sarh.transformation.infrastructure.adapters.inbound.rest.mapper.TransformationRestMapper;
-import com.fich.sarh.transformation.infrastructure.adapters.inbound.rest.model.request.TransformationRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
 public class TransformationUseCases implements TransformationApiPort {
 
     private final TransformationSpiPort transformationSpiPort;
-    private final TransformationRestMapper restMapper;
 
     @Override
     public List<Transformation> findAllTransformations() {
@@ -42,12 +40,14 @@ public class TransformationUseCases implements TransformationApiPort {
     }
 
     @Override
+    @Transactional
     public Transformation saveTransformation(Transformation transformation) {
 
         return transformationSpiPort.saveTransformation(transformation);
     }
 
     @Override
+    @Transactional
     public Transformation updateTransformation(Long id, Transformation request) {
 
         // var transformation = restMapper.toTransformation(request);

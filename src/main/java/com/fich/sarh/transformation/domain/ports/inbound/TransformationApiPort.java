@@ -1,7 +1,6 @@
 package com.fich.sarh.transformation.domain.ports.inbound;
 
 import com.fich.sarh.transformation.domain.model.Transformation;
-import com.fich.sarh.transformation.infrastructure.adapters.inbound.rest.model.request.TransformationRequest;
 
 import java.util.List;
 

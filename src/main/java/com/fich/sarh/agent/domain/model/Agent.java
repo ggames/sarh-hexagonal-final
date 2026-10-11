@@ -1,9 +1,6 @@
 package com.fich.sarh.agent.domain.model;
 
-import com.fich.sarh.agent.infrastructure.adapters.outbound.persistence.validation.UniqueDocumentAgent;
 import com.fich.sarh.common.DocumentType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,10 +29,8 @@ public class Agent {
     @Size(min = 2, max = 64, message = "El nombre debe tener al menos 2 caracteres")
     private String lastname;
 
-    @Enumerated(EnumType.ORDINAL)
     private DocumentType documenttype;
     @NotBlank(message = "El documento es obligatorio")
-    @UniqueDocumentAgent
     private String document;
 
     @NotNull(message = "La fecha de nacimiento es obligatoria")

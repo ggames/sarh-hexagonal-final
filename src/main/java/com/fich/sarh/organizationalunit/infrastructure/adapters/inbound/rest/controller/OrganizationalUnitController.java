@@ -46,9 +46,10 @@ public class OrganizationalUnitController {
     @PostMapping("create")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> save(@Valid @RequestBody  OrganizationalUnitRequest request){
+        OrganizationalUnit domainModel = restMapper.toOrganizationalUnit(request);
         OrganizationalUnit organizationalUnit = organizationalApiPort
-                                                    .saveOrganizationUnit(request);
-                      return ResponseEntity.status(HttpStatus.CREATED).body(organizationalUnit);
+                                                    .saveOrganizationUnit(domainModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(organizationalUnit);
     }
 
     @GetMapping("{id}")
@@ -57,16 +58,15 @@ public class OrganizationalUnitController {
         OrganizationalUnit organizational = organizationalApiPort
                   .findOrganizationalunitById(id).orElseThrow(() -> new ResourceNotFoundException("Departamento no existente"));
 
-
         return organizational;
     }
 
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody OrganizationalUnitRequest request){
+        OrganizationalUnit domainModel = restMapper.toOrganizationalUnit(request);
         OrganizationalUnit organizationalUnit = organizationalApiPort
-                .updateOrganizationUnit(id,
-                request);
+                .updateOrganizationUnit(id, domainModel);
         return ResponseEntity.status(HttpStatus.OK).body(organizationalUnit) ;
     }
 }

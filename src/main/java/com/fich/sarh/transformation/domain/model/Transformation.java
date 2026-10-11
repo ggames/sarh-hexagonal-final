@@ -1,6 +1,5 @@
 package com.fich.sarh.transformation.domain.model;
 
-import com.fich.sarh.transformation.infrastructure.adapters.outbound.persistence.validation.UniqueResolutionTransformation;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -22,7 +21,6 @@ public class Transformation {
 
     LocalDate date;
 
-    @UniqueResolutionTransformation
     @Pattern(
             regexp = "^[A-Z]{2}\\s\\d{4}/\\d{4}$",
             message = "Debe tener el formato XX 9999/9999"

@@ -6,8 +6,6 @@ import com.fich.sarh.organizationalsubunit.domain.model.OrganizationalSubUnit;
 import com.fich.sarh.organizationalsubunit.domain.model.OrganizationalSubUnitDTO;
 import com.fich.sarh.organizationalsubunit.domain.ports.inbound.OrganizationalSubunitApiPort;
 import com.fich.sarh.organizationalsubunit.domain.ports.outbound.OrganizationalSubunitSpiPort;
-import com.fich.sarh.organizationalsubunit.infrastructure.adapter.inbound.rest.mapper.OrganizationalSubUnitRestMapper;
-import com.fich.sarh.organizationalsubunit.infrastructure.adapter.inbound.rest.model.request.OrganizationalSubunitRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +17,6 @@ import java.util.Optional;
 public class OrganizationalSubunitUseCases implements OrganizationalSubunitApiPort {
 
     private final OrganizationalSubunitSpiPort subunitSpiPort;
-    private final OrganizationalSubUnitRestMapper mapperRest;
 
     @Override
     public List<OrganizationalSubUnitDTO> findAllOrganizationalSubUnitDTOs() {
@@ -46,9 +43,9 @@ public class OrganizationalSubunitUseCases implements OrganizationalSubunitApiPo
 
 
     @Override
-    public OrganizationalSubUnit saveOrganizationSubunit(OrganizationalSubunitRequest request) {
-        OrganizationalSubUnit organizationalSubUnit = mapperRest.toOrganizationalSubUnit(request);
-        return subunitSpiPort.saveOrganizationSubunit(organizationalSubUnit);
+    @Transactional
+    public OrganizationalSubUnit saveOrganizationSubunit(OrganizationalSubUnit request) {
+        return subunitSpiPort.saveOrganizationSubunit(request);
     }
 
     @Override

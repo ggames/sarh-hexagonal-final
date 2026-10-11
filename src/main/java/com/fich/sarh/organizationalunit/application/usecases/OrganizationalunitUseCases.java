@@ -6,8 +6,6 @@ import com.fich.sarh.organizationalunit.domain.model.OrganizationalDTO;
 import com.fich.sarh.organizationalunit.domain.model.OrganizationalUnit;
 import com.fich.sarh.organizationalunit.domain.ports.inbound.OrganizationalunitApiPort;
 import com.fich.sarh.organizationalunit.domain.ports.outbound.OrganizationalunitSpiPort;
-import com.fich.sarh.organizationalunit.infrastructure.adapters.inbound.rest.mapper.OrganizationalUnitRestMapper;
-import com.fich.sarh.organizationalunit.infrastructure.adapters.inbound.rest.model.request.OrganizationalUnitRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +17,6 @@ import java.util.Optional;
 public class OrganizationalunitUseCases implements OrganizationalunitApiPort {
 
     private final OrganizationalunitSpiPort organizationalSpiPort;
-    private final OrganizationalUnitRestMapper mapperRest;
 
     @Override
     public List<OrganizationalUnit> findAllOrganizationalUnits() {
@@ -42,17 +39,17 @@ public class OrganizationalunitUseCases implements OrganizationalunitApiPort {
     }
 
     @Override
-    public OrganizationalUnit saveOrganizationUnit(OrganizationalUnitRequest organizational) {
+    @Transactional
+    public OrganizationalUnit saveOrganizationUnit(OrganizationalUnit organizational) {
         if(organizational == null){
             throw new ResourceNotFoundException("No hay información del departamento");
         }
-
-        OrganizationalUnit organizationalUnit = mapperRest.toOrganizationalUnit(organizational);
-        return organizationalSpiPort.saveOrganizationUnit(organizationalUnit);
+        return organizationalSpiPort.saveOrganizationUnit(organizational);
     }
 
-    @Override @Transactional
-    public OrganizationalUnit updateOrganizationUnit(Long id, OrganizationalUnitRequest organizational) {
+    @Override
+    @Transactional
+    public OrganizationalUnit updateOrganizationUnit(Long id, OrganizationalUnit organizational) {
         OrganizationalUnit  organizationalUnit = organizationalSpiPort.findOrganizationalunitById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("No hay información de departamento"));
         organizationalUnit.setNameUnit(organizational.getNameUnit());

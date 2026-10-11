@@ -37,7 +37,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<?> handleUniqueConstraint(){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya se encuentra registrado .....");
+    public ResponseEntity<ApiResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, WebRequest webRequest){
+        ApiResponse apiResponse = new ApiResponse(
+                "Conflicto de integridad de datos: el registro ya existe o viola una restricción del sistema.",
+                webRequest.getDescription(false)
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
 }

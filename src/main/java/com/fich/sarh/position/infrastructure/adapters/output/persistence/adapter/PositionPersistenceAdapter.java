@@ -126,6 +126,9 @@ public class PositionPersistenceAdapter implements PositionSpiPort {
 
     @Override
     public void deletePosition(Long id) {
-
+        var entity = positionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cargo no encontrado"));
+        entity.setActive(false);
+        positionRepository.save(entity);
     }
 }

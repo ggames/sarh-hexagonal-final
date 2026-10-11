@@ -4,9 +4,9 @@ import com.fich.sarh.common.StatusOfPositions;
 import com.fich.sarh.common.UseCase;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.organizationalunit.domain.model.OrganizationalUnit;
-import com.fich.sarh.organizationalunit.domain.ports.outbound.OrganizationalunitSpiPort;
+import com.fich.sarh.organizationalunit.domain.ports.inbound.OrganizationalunitApiPort;
 import com.fich.sarh.point.domain.model.Point;
-import com.fich.sarh.point.domain.ports.outbound.PointSpiPort;
+import com.fich.sarh.point.domain.ports.inbound.PointApiPort;
 import com.fich.sarh.position.application.strategy.AvailablePointUpdatePositionStrategy;
 import com.fich.sarh.position.application.strategy.FullUpdatePositionStrategy;
 import com.fich.sarh.position.application.strategy.OriginatorUpdateStrategy;
@@ -17,8 +17,9 @@ import com.fich.sarh.position.domain.ports.inbound.PositionApiPort;
 import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
 import com.fich.sarh.position.domain.service.PositionDomainService;
 import com.fich.sarh.relationshipofposition.domain.service.RelationshipPositionDomainService;
-import com.fich.sarh.transformation.application.ports.persistence.TransformationRetrieveSpiPort;
+import com.fich.sarh.transformation.domain.ports.inbound.TransformationApiPort;
 import com.fich.sarh.transformation.domain.model.Transformation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -35,10 +36,9 @@ class PositionApiPortUseCases implements PositionApiPort {
     private final PositionDomainService positionService;
     private final RelationshipPositionDomainService relationService;
 
-    // REEMPLAZAR CUANDO SE FACTORICE POINT
-    private final PointSpiPort pointSpiPort;
-    private final TransformationRetrieveSpiPort transformationSpiPort;
-    private final OrganizationalunitSpiPort organizationalUnitSpiPort;
+    private final PointApiPort pointApiPort;
+    private final TransformationApiPort transformationApiPort;
+    private final OrganizationalunitApiPort organizationalUnitApiPort;
 
     private final FullUpdatePositionStrategy fullStrategy;
     private final AvailablePointUpdatePositionStrategy availableStrategy;
@@ -94,6 +94,7 @@ class PositionApiPortUseCases implements PositionApiPort {
     }
 
     @Override
+    @Transactional
     public Position updateFullPosition(Long id, PositionCommand command) {
 
         var position = fullStrategy.update(id, command);
@@ -102,12 +103,14 @@ class PositionApiPortUseCases implements PositionApiPort {
     }
 
     @Override
+    @Transactional
     public Position updateAvailablePoint(Long id, Position command) {
 
         return availableStrategy.update(id, command);
     }
 
     @Override
+    @Transactional
     public Position updateOriginatorRelation(Long id, Position command) {
         var position = positionSpiPort.findPositionById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Cargo no encontrado"));
@@ -122,18 +125,19 @@ class PositionApiPortUseCases implements PositionApiPort {
     }
 
     @Override
+    @Transactional
     public Position addPosition(PositionCommand command) {
 
         log.info("Datos de cargos de ORIGEN "+ command.toString());
 
-        Point pointFound = pointSpiPort.findPointById(command.getPoint())
+        Point pointFound = pointApiPort.findPointById(command.getPoint())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el tipo de cargo"));
 
-        Transformation transformation = transformationSpiPort
-                .findById(command.getResolutionTransformation())
-                .orElseThrow(() -> new ResourceNotFoundException("No existe el resolución de creación del cargo"));
+        // findTransformationById lanza ResourceNotFoundException internamente si no existe
+        Transformation transformation = transformationApiPort
+                .findTransformationById(command.getResolutionTransformation());
 
-        OrganizationalUnit organizationalUnit = organizationalUnitSpiPort
+        OrganizationalUnit organizationalUnit = organizationalUnitApiPort
                 .findOrganizationalunitById(command.getOrganizational())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el departamento asociado al cargo"));
 
@@ -183,7 +187,8 @@ class PositionApiPortUseCases implements PositionApiPort {
     }
 
     @Override
+    @Transactional
     public void deletePosition(Long id) {
-
+        positionSpiPort.deletePosition(id);
     }
 }

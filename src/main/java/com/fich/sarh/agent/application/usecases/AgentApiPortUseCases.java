@@ -3,8 +3,8 @@ package com.fich.sarh.agent.application.usecases;
 import com.fich.sarh.agent.domain.model.Agent;
 import com.fich.sarh.agent.domain.ports.inbound.AgentApiPort;
 import com.fich.sarh.agent.domain.ports.outbound.AgentSpiPort;
-import com.fich.sarh.agent.infrastructure.adapters.outbound.persistence.mapper.AgentRestMapper;
 import com.fich.sarh.common.UseCase;
+import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import java.util.Optional;
 public class AgentApiPortUseCases implements AgentApiPort {
 
     private final AgentSpiPort agentSpiPort;
-    private final AgentRestMapper restMapper;
 
     @Override
     public Page<Agent> findAllAgent(int page, int size) {
@@ -48,7 +47,9 @@ public class AgentApiPortUseCases implements AgentApiPort {
     @Override
     @Transactional
     public Agent addAgent(Agent command) {
-
+        if (command.getDocument() != null && agentSpiPort.existByDocumentAgent(command.getDocument())) {
+            throw new BusinessRuleViolationException("Ya existe un agente con el documento " + command.getDocument());
+        }
         return agentSpiPort.saveAgent(command);
     }
 

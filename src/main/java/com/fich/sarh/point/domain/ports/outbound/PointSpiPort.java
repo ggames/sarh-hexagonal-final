@@ -1,8 +1,6 @@
 package com.fich.sarh.point.domain.ports.outbound;
 
 import com.fich.sarh.point.domain.model.Point;
-import com.fich.sarh.point.infrastructure.adapter.input.rest.model.request.PointRequest;
-import com.fich.sarh.point.infrastructure.adapter.input.rest.model.response.PointResponse;
 
 import java.util.List;
 import java.util.Optional;
