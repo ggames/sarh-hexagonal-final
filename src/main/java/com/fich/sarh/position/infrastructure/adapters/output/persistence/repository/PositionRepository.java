@@ -3,6 +3,8 @@ package com.fich.sarh.position.infrastructure.adapters.output.persistence.reposi
 import com.fich.sarh.common.StatusOfPositions;
 import com.fich.sarh.position.domain.model.PositionDto;
 import com.fich.sarh.position.infrastructure.adapters.output.persistence.entity.PositionEntity;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -52,6 +54,12 @@ public interface PositionRepository extends JpaRepository<PositionEntity, Long> 
             """)
     List<PositionDto> findAllPosition();
 
+    @EntityGraph(attributePaths = {"point", "organizationalUnit",
+            "organizationalUnit.director", "organizationalUnit.viceDirector",
+            "creationResolution", "resolutionSuppression"})
+    @Query("SELECT DISTINCT p FROM PositionEntity p")
+    List<PositionEntity> findAllWithRelations(Pageable pageable);
+
     @Query("SELECT p FROM PositionEntity p WHERE p.positionStatus = ?1")
     List<PositionEntity> findAvailablePosition(StatusOfPositions status);
 
@@ -69,4 +77,10 @@ public interface PositionRepository extends JpaRepository<PositionEntity, Long> 
     List<PositionDto> findFreePosition();
 
     List<PositionEntity> findAllByIdIn(List<Long> ids);
+
+    boolean existsByOrganizationalUnit_Id(Long organizationalUnitId);
+
+    boolean existsByPoint_Id(Long pointId);
+
+    boolean existsByCreationResolution_IdOrResolutionSuppression_Id(Long creationResId, Long suppressionResId);
 }

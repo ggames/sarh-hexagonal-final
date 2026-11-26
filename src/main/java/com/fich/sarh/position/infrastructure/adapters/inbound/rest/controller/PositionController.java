@@ -5,9 +5,9 @@ import com.fich.sarh.position.domain.model.Position;
 import com.fich.sarh.position.domain.model.PositionCommand;
 import com.fich.sarh.position.domain.model.PositionDto;
 import com.fich.sarh.position.domain.ports.inbound.PositionApiPort;
-import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
 import com.fich.sarh.position.infrastructure.adapters.inbound.rest.model.response.PositionResponse;
 import com.fich.sarh.position.infrastructure.adapters.output.persistence.mapper.PositionRestMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -33,59 +33,69 @@ public class PositionController {
 
 
     @GetMapping("origin/{id_generatePosition}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PositionDto> findOriginPosition(@PathVariable Long id_generatePosition) {
        return  positionApiPort.findOriginPositions(id_generatePosition);
       //   return retrieveService.getOriginPositions(id_generatePosition);
     }
 
     @GetMapping("available")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PositionDto> findAvailablePositions(){
         return  positionApiPort.findFreePositions(); // getFreePositions();
     }
 
     @GetMapping("allposition")
-    @PreAuthorize("hasRole('USER')")
-    public List<PositionResponse> findAll(){
-        log.info("CANTIDAD DE CARGOS " + positionApiPort.findAllPosition().size());
-        return PositionRestMapper.INSTANCE.toPositionResponseList(positionApiPort.findAllPosition());
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
+    public List<PositionResponse> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "500") int size){
+        var positions = positionApiPort.findAllPosition(page, size);
+        log.debug("CANTIDAD DE CARGOS {}", positions.size());
+        return PositionRestMapper.INSTANCE.toPositionResponseList(positions);
     }
 
     @GetMapping("vacant")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PositionDto> findVacantPositions() {
         return positionApiPort.findVacantPositions();
     }
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PositionDto> findAllPosition() {
         return positionApiPort.findAllPositions();
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("hasRole('USER')")
-    public Position getPositionById(@PathVariable Long id){
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
+    public ResponseEntity<Position> getPositionById(@PathVariable Long id) {
         Optional<Position> positionFound = positionApiPort.findPositionById(id);
-        log.info("CARGOS ENCONTRADO ????" + positionFound.get());
-        if(!positionFound.isPresent()) {
-            return null;
+        if (!positionFound.isPresent()) {
+            return ResponseEntity.notFound().build();
         }
-        return positionFound.get();
+        log.info("CARGO ENCONTRADO: " + positionFound.get());
+        return ResponseEntity.ok(positionFound.get());
     }
 
     @PostMapping("create")
     @PreAuthorize("hasRole('USER')")
-    public Position save(@RequestBody PositionCommand command){
+    public Position save(@Valid @RequestBody PositionCommand command){
         //infoLogger.info("SOLICITUD de CARGO " + command.getOriginPositionIds());
         return  positionApiPort.addPosition(command);  //saveService.savePosition(command);
     }
 
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> update(@PathVariable Long id,@RequestBody PositionCommand request){
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody PositionCommand request){
         log.info("VALOR ID CARGO " + request);
         return  new ResponseEntity<>(positionApiPort.updateFullPosition(id, request), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = {"{id}", "delete/{id}"})
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deletePosition(@PathVariable Long id) {
+        positionApiPort.deletePosition(id);
+        return ResponseEntity.ok().body("Cargo eliminado con éxito");
     }
 
    /* @PostMapping("create")

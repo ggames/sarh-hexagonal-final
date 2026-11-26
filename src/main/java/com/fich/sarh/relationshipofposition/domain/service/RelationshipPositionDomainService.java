@@ -2,7 +2,7 @@ package com.fich.sarh.relationshipofposition.domain.service;
 
 import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
 import com.fich.sarh.position.domain.model.Position;
-import com.fich.sarh.relationshipofposition.application.usecases.port.out.RelationshipQueryPort;
+import com.fich.sarh.relationshipofposition.domain.ports.outbound.RelationshipQueryPort;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

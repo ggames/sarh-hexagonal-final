@@ -54,7 +54,14 @@ public class OrganizationalSubUnitPersistenceAdapter implements OrganizationalSu
         return mapper.toOrganizationalSubUnit(subunitRepository.save(entity));
     }
 
+    @Override
+    public boolean existsByOrganizationalUnitId(Long organizationalUnitId) {
+        return subunitRepository.existsByOrganizationalUnit_Id(organizationalUnitId);
+    }
 
-
+    @Override
+    public void deleteOrganizationalSubunit(Long id) {
+        subunitRepository.deleteById(id);
+    }
 
 }

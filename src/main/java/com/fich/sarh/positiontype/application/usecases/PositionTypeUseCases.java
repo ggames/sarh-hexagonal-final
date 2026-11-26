@@ -41,4 +41,12 @@ public class PositionTypeUseCases implements PositionTypeApiPort {
         existing.setNamePosition(command.getNamePosition());
         return positionTypeSpiPort.savePositionType(existing);
     }
+
+    @Override
+    @Transactional
+    public void deletePositionType(Long id) {
+        positionTypeSpiPort.findPositionTypeById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de cargo no encontrado con ID: " + id));
+        positionTypeSpiPort.deletePositionType(id);
+    }
 }

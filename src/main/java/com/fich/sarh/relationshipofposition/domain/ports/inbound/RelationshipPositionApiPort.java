@@ -7,4 +7,5 @@ public interface RelationshipPositionApiPort {
    // void updateRelationshipPosition(Long relationId, List<Long> fatherIds, Long sonId);
 
     void deleteRelationShipPosition(Long id);
+    boolean existsByPositionId(Long positionId);
 }

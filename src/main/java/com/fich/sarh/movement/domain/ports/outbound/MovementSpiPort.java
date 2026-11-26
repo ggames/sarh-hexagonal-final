@@ -12,6 +12,8 @@ public interface MovementSpiPort {
     Optional<Movement> findMovementById(Long id);
     Movement findByPlant(PlantOfPosition plant);
     void saveMovement(Movement movement);
-
+    boolean existsByPositionId(Long positionId);
+    boolean existsByPlantId(Long plantId);
+    void deleteMovement(Long id);
 
 }

@@ -18,4 +18,6 @@ public interface OrganizationalSubUnitRepository extends JpaRepository<Organizat
 
     List<OrganizationalSubUnitEntity>findByNameSubUnit(String name);
 
+    boolean existsByOrganizationalUnit_Id(Long organizationalUnitId);
+
 }

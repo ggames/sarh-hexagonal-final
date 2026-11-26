@@ -1,7 +1,7 @@
 package com.fich.sarh.auth.application.ports.output.persistence;
 
-import com.fich.sarh.auth.infrastructure.adapter.input.rest.model.request.LoginRequest;
-import com.fich.sarh.auth.infrastructure.adapter.input.rest.model.response.AuthResponse;
+import com.fich.sarh.auth.application.model.LoginRequest;
+import com.fich.sarh.auth.application.model.AuthResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserDetailsSpiPort extends UserDetailsService {

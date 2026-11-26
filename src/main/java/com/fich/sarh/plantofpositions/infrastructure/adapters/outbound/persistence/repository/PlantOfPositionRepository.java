@@ -1,9 +1,9 @@
 package com.fich.sarh.plantofpositions.infrastructure.adapters.outbound.persistence.repository;
 
 import com.fich.sarh.common.PlantStatus;
-import com.fich.sarh.plantofpositions.domain.model.PlantOfPosition;
 import com.fich.sarh.plantofpositions.domain.model.PlantOfPositionDto;
 import com.fich.sarh.plantofpositions.infrastructure.adapters.outbound.persistence.entity.PlantOfPositionEntity;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -11,10 +11,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PlantOfPositionRepository extends
         JpaRepository<PlantOfPositionEntity, Long>, JpaSpecificationExecutor<PlantOfPositionEntity> {
+
+    @Override
+    @EntityGraph(attributePaths = {"position", "agent", "organizationalSubUnit"})
+    Optional<PlantOfPositionEntity> findById(Long id);
 
 //   @Query(value= "SELECT COUNT(pl.agentID) as countRegister FROM PlantOfPositionEntity pl LEFT JOIN pl.agentID ag LEFT JOIN pl.positionID ps ")
 
@@ -31,7 +36,7 @@ public interface PlantOfPositionRepository extends
 
    @Query(value = "SELECT pl FROM PlantOfPositionEntity pl LEFT JOIN pl.agent ag " +
            "LEFT JOIN pl.position ps WHERE ag.id = ?1 AND ps.id = ?2 AND pl.currentStatusID = 3")
-   List<PlantOfPosition> findPlantPositionByAgentAndPositionWithStatus(Long agentId, Long positionId);
+    List<PlantOfPositionEntity> findPlantPositionByAgentAndPositionWithStatus(Long agentId, Long positionId);
 
    @Query(value = """
            SELECT pl.id AS id,
@@ -56,7 +61,13 @@ public interface PlantOfPositionRepository extends
           """)
    boolean existsByAgentAndPosition( @Param("agentId") Long agentId,
                                      @Param("positionId") Long positionId);
- //  <T> List<T> findAll(Specification<PlantOfPositionEntity> spec, Class<T> type);
+
+   boolean existsByAgent_Id(Long agentId);
+
+   boolean existsByPosition_Id(Long positionId);
+
+   boolean existsByOrganizationalSubUnit_Id(Long subUnitId);
+//  <T> List<T> findAll(Specification<PlantOfPositionEntity> spec, Class<T> type);
 
 }
   /* @Query(value = """

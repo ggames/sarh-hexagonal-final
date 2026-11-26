@@ -25,11 +25,11 @@ public class MovementEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-   @ManyToOne
+   @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="planta_id")
     PlantOfPositionEntity plant;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cargo_id")
     PositionEntity position;
 

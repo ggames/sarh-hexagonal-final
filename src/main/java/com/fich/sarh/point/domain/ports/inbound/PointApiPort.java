@@ -12,4 +12,5 @@ public interface PointApiPort {
     Point updatePoint(Long id, Point request);
     void applyGlobalParity(double percentage);
     void applyParityByPositionType(Long id, Long amount_point);
+    void deletePoint(Long id);
 }

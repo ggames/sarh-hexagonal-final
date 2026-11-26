@@ -1,6 +1,7 @@
 package com.fich.sarh.relationshipofposition.application.usecases;
 
 import com.fich.sarh.common.UseCase;
+import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
 import com.fich.sarh.relationshipofposition.domain.ports.inbound.RelationshipPositionApiPort;
 import com.fich.sarh.relationshipofposition.domain.ports.outbound.RelationshipPositionSpiPort;
@@ -15,12 +16,15 @@ public class RelationshipPositionUseCases implements RelationshipPositionApiPort
     private final RelationshipPositionSpiPort relationshipPort;
     private final RelationshipPositionDomainService domainService;
 
-
-
-
-
     @Override
     public void deleteRelationShipPosition(Long id) {
+        relationshipPort.findRelationshipPositionById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Relación de cargos no encontrada con ID: " + id));
+        relationshipPort.deleteRelationshipPosition(id);
+    }
 
+    @Override
+    public boolean existsByPositionId(Long positionId) {
+        return relationshipPort.existsByPositionId(positionId);
     }
 }

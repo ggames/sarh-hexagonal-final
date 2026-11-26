@@ -40,6 +40,9 @@ public class PositionTypePersistenceAdapter implements
 
     }
 
-
+    @Override
+    public void deletePositionType(Long id) {
+        positionTypeRepository.deleteById(id);
+    }
 
 }

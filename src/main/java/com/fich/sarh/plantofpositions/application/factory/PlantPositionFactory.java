@@ -6,6 +6,7 @@ import com.fich.sarh.common.PlantStatus;
 import com.fich.sarh.organizationalsubunit.domain.model.OrganizationalSubUnit;
 import com.fich.sarh.plantofpositions.domain.model.PlantOfPosition;
 import com.fich.sarh.position.domain.model.Position;
+
 import org.springframework.stereotype.Component;
 
 @Component

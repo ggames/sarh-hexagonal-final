@@ -1,6 +1,6 @@
 package com.fich.sarh.transformation.infrastructure.adapters.outbound.persistence.adapter;
 
-import com.fich.sarh.common.WebAdapter;
+import com.fich.sarh.common.PersistenceAdapter;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.transformation.domain.model.Transformation;
 import com.fich.sarh.transformation.domain.ports.outbound.TransformationSpiPort;
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
-@WebAdapter
+@PersistenceAdapter
 @RequiredArgsConstructor
 public class TransformationPersistenceAdapter implements TransformationSpiPort {
 
@@ -64,5 +64,10 @@ public class TransformationPersistenceAdapter implements TransformationSpiPort {
     public boolean existByResolutionNumber(String resolutionNumber) {
 
         return transformationRepository.existsByResolutionNumber(resolutionNumber);
+    }
+
+    @Override
+    public void deleteTransformation(Long id) {
+        transformationRepository.deleteById(id);
     }
 }

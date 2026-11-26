@@ -1,7 +1,7 @@
 package com.fich.sarh.auth.infrastructure.adapter.output.persistence.repository;
 
 import com.fich.sarh.auth.infrastructure.adapter.output.persistence.entities.RoleEntity;
-import com.fich.sarh.auth.infrastructure.adapter.output.persistence.entities.RoleEnum;
+import com.fich.sarh.auth.domain.model.RoleEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Set;

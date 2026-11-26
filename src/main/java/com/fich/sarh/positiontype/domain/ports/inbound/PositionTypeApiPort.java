@@ -10,4 +10,5 @@ public interface PositionTypeApiPort {
     Optional<PositionType> findPositionTypeById(Long id);
     PositionType savePositionType(PositionType positionType);
     PositionType updatePositionType(Long id, PositionType positionType);
+    void deletePositionType(Long id);
 }

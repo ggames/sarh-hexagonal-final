@@ -51,4 +51,9 @@ public class PointPersistenceAdapter implements PointSpiPort {
         var saved = pointRepository.save(entity);
         return mapper.toDto(saved);
     }
+
+    @Override
+    public void deletePoint(Long id) {
+        pointRepository.deleteById(id);
+    }
 }

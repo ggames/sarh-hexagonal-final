@@ -18,4 +18,8 @@ public interface UserRetrieveSpiPort {
     byte[] getPhotoByUsername(String username);
 
     boolean existsUsername(String username);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
+
+    boolean existsByUsernameIgnoreCaseAndIdNot(String username, Long id);
 }

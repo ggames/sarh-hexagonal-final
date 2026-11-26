@@ -53,4 +53,14 @@ public class OrganizationalUnitPersistenceAdapter implements OrganizationalunitS
         return  mapper.toDto(organizationalRepository.save(entity));
     }
 
+    @Override
+    public boolean existsByDirectorOrViceDirectorId(Long agentId) {
+        return organizationalRepository.existsByDirector_IdOrViceDirector_Id(agentId, agentId);
+    }
+
+    @Override
+    public void deleteOrganizationalUnit(Long id) {
+        organizationalRepository.deleteById(id);
+    }
+
 }

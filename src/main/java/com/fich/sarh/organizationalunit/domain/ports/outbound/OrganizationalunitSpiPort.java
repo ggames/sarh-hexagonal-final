@@ -12,4 +12,6 @@ public interface OrganizationalunitSpiPort {
     List<OrganizationalDTO> findAllOrganizationDto();
     List<OrganizationalUnit>findByNameUnit(String unit);
     OrganizationalUnit saveOrganizationUnit(OrganizationalUnit organizational);
+    boolean existsByDirectorOrViceDirectorId(Long agentId);
+    void deleteOrganizationalUnit(Long id);
 }

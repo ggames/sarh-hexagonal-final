@@ -1,7 +1,7 @@
 package com.fich.sarh.auth.infrastructure.adapter.input.rest.mapper;
 
 import com.fich.sarh.auth.domain.model.RoleDTO;
-import com.fich.sarh.auth.infrastructure.adapter.input.rest.model.request.RoleRequest;
+import com.fich.sarh.auth.application.model.RoleRequest;
 import com.fich.sarh.auth.infrastructure.adapter.input.rest.model.response.RoleResponse;
 import com.fich.sarh.auth.infrastructure.adapter.output.persistence.entities.RoleEntity;
 import org.mapstruct.Mapper;

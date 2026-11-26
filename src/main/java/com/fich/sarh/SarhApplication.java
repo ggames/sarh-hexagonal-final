@@ -1,24 +1,17 @@
-	package com.fich.sarh;
+package com.fich.sarh;
+import com.fich.sarh.auth.domain.model.RoleEnum;
 
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
-    import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import com.fich.sarh.common.config.DotenvLoader;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
-@SpringBootApplication(
-
-)
-
-public class SarhApplication {//implements WebMvcConfigurer {
-
-/*	private final MovementRepository retrieveServicePort;
-
-	public SarhApplication(MovementRepository retrieveServicePort) {
-		this.retrieveServicePort = retrieveServicePort;
-	}*/
-
+@SpringBootApplication
+public class SarhApplication {
 
 	public static void main(String[] args) {
+		DotenvLoader.load();
 		SpringApplication.run(SarhApplication.class, args);
 	}
 
@@ -60,11 +53,11 @@ public class SarhApplication {//implements WebMvcConfigurer {
 					.permissionSet(Set.of(createPermission, readPermission))
 					.build();
 
-			RoleEntity roleInvited = RoleEntity.builder().roleEnum(RoleEnum.INVITED)
+			RoleEntity roleOnlyConsult = RoleEntity.builder().roleEnum(RoleEnum.ONLY_CONSULT)
 					.permissionSet(Set.of(readPermission))
 					.build();
 
-			RoleEntity roleDeveloper = RoleEntity.builder().roleEnum(RoleEnum.DEVELOPER)
+			RoleEntity roleDeveloper = RoleEntity.builder().roleEnum(RoleEnum.ADMIN)
 					.permissionSet(Set.of(createPermission, readPermission, updatePermission, deletePermission, refactorPermission))
 					.build();
 
@@ -101,7 +94,7 @@ public class SarhApplication {//implements WebMvcConfigurer {
 					.accountNonExpired(true)
 					.accountNonLocked(true)
 					.credentialNonExpired(true)
-					.roles(Set.of(roleInvited))
+					.roles(Set.of(roleOnlyConsult))
 					.build();
 
 			UserEntity userAnyi = UserEntity.builder()

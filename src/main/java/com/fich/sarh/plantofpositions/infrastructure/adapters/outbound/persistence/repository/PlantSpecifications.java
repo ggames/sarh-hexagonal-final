@@ -1,6 +1,7 @@
 package com.fich.sarh.plantofpositions.infrastructure.adapters.outbound.persistence.repository;
 
 import com.fich.sarh.agent.infrastructure.adapters.outbound.persistence.entity.AgentEntity;
+import com.fich.sarh.organizationalsubunit.infrastructure.adapter.outbound.persistence.entity.OrganizationalSubUnitEntity;
 import com.fich.sarh.organizationalunit.infrastructure.adapters.outbound.persistence.entity.OrganizationalUnitEntity;
 import com.fich.sarh.plantofpositions.domain.model.PlantFilter;
 import com.fich.sarh.plantofpositions.infrastructure.adapters.outbound.persistence.entity.PlantOfPositionEntity;
@@ -25,7 +26,7 @@ public class PlantSpecifications {
 
     public static Specification<PlantOfPositionEntity> hasNamePosition(String nameposition) {
         return (root, query, cb) -> {
-            Join<PlantOfPositionEntity,PositionEntity> positionJoin = root.join("Position", JoinType.LEFT);
+            Join<PlantOfPositionEntity,PositionEntity> positionJoin = root.join("position", JoinType.LEFT);
             Join<PositionEntity,PointEntity> pointJoin = positionJoin.join("point", JoinType.LEFT);
             return cb.like(cb.upper(pointJoin.get("namePosition")) , "%" + nameposition.toUpperCase() + "%");
         };
@@ -33,7 +34,8 @@ public class PlantSpecifications {
 
     public static Specification<PlantOfPositionEntity> hasSubject(String subject) {
         return (root, query, cb) -> {
-            Join<PlantOfPositionEntity,PositionEntity> positionJoin = root.join("organizationalSubUnit", JoinType.LEFT);
+            Join<PlantOfPositionEntity,OrganizationalSubUnitEntity> positionJoin =
+                    root.join("organizationalSubUnit", JoinType.LEFT);
 
             return cb.like(cb.upper(positionJoin.get("nameSubUnit")) , "%" + subject.toUpperCase() + "%");
         };

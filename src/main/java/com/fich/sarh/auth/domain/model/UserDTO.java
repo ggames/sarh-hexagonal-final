@@ -1,5 +1,6 @@
 package com.fich.sarh.auth.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -27,6 +28,7 @@ public class UserDTO {
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
             message = "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número"
     )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private boolean mustChangePassword;

@@ -1,8 +1,6 @@
 package com.fich.sarh.auth.domain.model;
 
-import com.fich.sarh.auth.infrastructure.adapter.output.persistence.entities.RoleEnum;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.fich.sarh.auth.domain.model.RoleEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,6 +15,5 @@ public class RoleDTO {
 
     Long id;
 
-    @Enumerated(EnumType.STRING)
     RoleEnum roleEnum;
 }

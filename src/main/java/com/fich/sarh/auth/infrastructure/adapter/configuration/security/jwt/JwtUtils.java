@@ -175,13 +175,18 @@ public class JwtUtils {
 
         String username = extractUsernameFromAuth(authentication);
 
+        String authorities = authentication.getAuthorities()
+                .stream().map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
         Date now = new Date();
         Date expiresAt = new Date(now.getTime() + expiryDate);
 
         return JWT.create()
                 .withIssuer(userGenerator)
                 .withSubject(username)
-               .withClaim("type", "refresh")
+                .withClaim("authorities", authorities)
+                .withClaim("type", "refresh")
                 .withIssuedAt(now)
                 .withExpiresAt(expiresAt)
                 .withJWTId(UUID.randomUUID().toString())

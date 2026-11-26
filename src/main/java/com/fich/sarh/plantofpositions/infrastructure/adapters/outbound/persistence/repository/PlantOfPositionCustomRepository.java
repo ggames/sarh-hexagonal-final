@@ -92,7 +92,8 @@ public class PlantOfPositionCustomRepository {
 
         ));
 
-        return em.createQuery(cq).getResultList();
+        jakarta.persistence.TypedQuery<PlantProjectionDTO> query = em.createQuery(cq);
+        query.setMaxResults(1000);
+        return query.getResultList();
     }
-
 }

@@ -64,4 +64,17 @@ public class PlantHistoryUseCases implements PlantHistoryApiPort {
         history.setDateTo(plantHistory.getDateTo());
         return plantHistorySpiPort.savePlantHistory(history);
     }
+
+    @Override
+    public boolean existsByPlantId(Long plantId) {
+        return plantHistorySpiPort.existsByPlantId(plantId);
+    }
+
+    @Override
+    @Transactional
+    public void deletePlantHistory(Long id) {
+        plantHistorySpiPort.findPlantHistoryById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Historia de planta no encontrada con ID: " + id));
+        plantHistorySpiPort.deletePlantHistory(id);
+    }
 }

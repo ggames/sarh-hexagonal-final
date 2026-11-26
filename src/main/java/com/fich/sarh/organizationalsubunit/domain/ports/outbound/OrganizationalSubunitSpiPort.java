@@ -12,5 +12,7 @@ public interface OrganizationalSubunitSpiPort {
     Optional<OrganizationalSubUnit> findOrganizationalSubunitById(Long id);
     List<OrganizationalSubUnit> findByName(String unit);
     OrganizationalSubUnit saveOrganizationSubunit(OrganizationalSubUnit request);
+    boolean existsByOrganizationalUnitId(Long organizationalUnitId);
+    void deleteOrganizationalSubunit(Long id);
 
 }

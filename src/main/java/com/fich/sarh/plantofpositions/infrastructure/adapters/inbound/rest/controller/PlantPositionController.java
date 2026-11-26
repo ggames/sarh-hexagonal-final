@@ -2,6 +2,7 @@ package com.fich.sarh.plantofpositions.infrastructure.adapters.inbound.rest.cont
 
 import com.fich.sarh.common.WebAdapter;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
+import jakarta.validation.Valid;
 // import com.fich.sarh.plantofpositions.application.ports.entrypoint.api.*;
 import com.fich.sarh.plantofpositions.domain.model.*;
 import com.fich.sarh.plantofpositions.domain.ports.inbound.PlantPositionApiPort;
@@ -18,9 +19,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 
 @WebAdapter
@@ -45,7 +47,7 @@ public class PlantPositionController {
 
 
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PlantOfPositionDto> findAll() {
 
         return plantApiPort.findAllPlantPositions();
@@ -53,7 +55,7 @@ public class PlantPositionController {
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public PlantOfPositionResponse findPlantPositionById(@PathVariable Long id) {
         var plantOfPositionFound = plantApiPort.findPlantPositionById(id)
                 .orElseThrow(()-> new ResourceNotFoundException(""));
@@ -62,26 +64,26 @@ public class PlantPositionController {
     }
 
     @PostMapping("create")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<PlantOfPositionResponse> save(@RequestBody PlantOfPositionCommand request) {
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public ResponseEntity<PlantOfPositionResponse> save(@Valid @RequestBody PlantOfPositionCommand request) {
         PlantOfPosition created = plantApiPort.addPlantOfPosition(request);
         return new ResponseEntity<>(restMapper.toPlantOfPositionResponse(created), HttpStatus.CREATED);
     }
 
     @GetMapping("search/")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public ResponseEntity<?> search(PlantFilter filter) {
 
         // Specification<PlantOfPositionEntity> specification = PlantSpecifications.createSpecification(filter);
         return new ResponseEntity<>(plantApiPort.search(filter), HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PostMapping(
             value = "/report/excel",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    public ResponseEntity<byte[]> generateExcelReport(@RequestBody PlantFilter filter) {
+    public ResponseEntity<StreamingResponseBody> generateExcelReport(@RequestBody PlantFilter filter) {
         logger.info("Generando reporte Excel con filtro: {}", filter);
 
         List<PlantProjectionDTO> plants = plantApiPort.search(filter);
@@ -91,39 +93,41 @@ public class PlantPositionController {
             return ResponseEntity.noContent().build();
         }
 
-        try (ByteArrayInputStream in = plantApiPort.createExcel(plants)) {
-            if (in == null) {
-                logger.error("Error al generar el archivo Excel");
-                return ResponseEntity.internalServerError().build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"plantas.xlsx\"");
+        headers.add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+
+        StreamingResponseBody body = out -> {
+            try {
+                plantApiPort.writeExcel(plants, out);
+            } catch (IOException e) {
+                logger.error("Error al escribir el reporte Excel", e);
+                throw new UncheckedIOException(e);
             }
+        };
 
-            byte[] bytes = in.readAllBytes();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"plantas.xlsx\"");
-            headers.add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
-            headers.add("Pragma", "no-cache");
-            headers.add("Expires", "0");
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentType(MediaType.parseMediaType(
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    ))
-                    .contentLength(bytes.length)
-                    .body(bytes);
-
-        } catch (IOException e) {
-            logger.error("Error al generar el archivo Excel", e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ))
+                .body(body);
     }
     @PutMapping("update/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<PlantOfPositionResponse> update(@PathVariable Long id, @RequestBody PlantOfPositionRequest request) {
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public ResponseEntity<PlantOfPositionResponse> update(@PathVariable Long id, @Valid @RequestBody PlantOfPositionRequest request) {
         PlantOfPosition domainModel = restMapper.toPlantOfPosition(request);
         PlantOfPosition updated = plantApiPort.updatePlantOfPosition(id, domainModel);
         return new ResponseEntity<>(restMapper.toPlantOfPositionResponse(updated), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = {"{id}", "delete/{id}"})
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public ResponseEntity<?> deletePlantPosition(@PathVariable Long id) {
+        plantApiPort.deletePlantPosition(id);
+        return ResponseEntity.ok().body("Registro de planta eliminado con éxito");
     }
 }
 

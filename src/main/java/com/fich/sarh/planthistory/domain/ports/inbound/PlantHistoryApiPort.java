@@ -13,4 +13,6 @@ public interface PlantHistoryApiPort {
     PlantHistory  findTopByPlantIdOrderHistoryIdDesc(Long plantId);
     PlantHistory savePlantHistory(PlantHistory plantHistory);
     PlantHistory updatePlantHistory(Long id, PlantHistory plantHistory);
+    boolean existsByPlantId(Long plantId);
+    void deletePlantHistory(Long id);
 }

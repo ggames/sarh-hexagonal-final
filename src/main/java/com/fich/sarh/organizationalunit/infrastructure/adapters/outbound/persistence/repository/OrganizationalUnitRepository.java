@@ -18,4 +18,6 @@ public interface OrganizationalUnitRepository extends JpaRepository<Organization
 
     List<OrganizationalUnitEntity> findByNameUnit(String nameUnit);
 
+    boolean existsByDirector_IdOrViceDirector_Id(Long directorId, Long viceDirectorId);
+
 }

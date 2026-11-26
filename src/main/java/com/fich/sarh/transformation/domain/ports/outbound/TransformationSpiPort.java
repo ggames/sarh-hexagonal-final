@@ -21,4 +21,6 @@ public interface TransformationSpiPort {
 
     boolean existByResolutionNumber(String resolutionNumber);
 
+    void deleteTransformation(Long id);
+
 }

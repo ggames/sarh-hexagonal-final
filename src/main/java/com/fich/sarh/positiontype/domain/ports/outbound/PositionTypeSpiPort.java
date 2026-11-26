@@ -9,4 +9,5 @@ public interface PositionTypeSpiPort {
     List<PositionType> findAllPositionType();
     Optional<PositionType> findPositionTypeById(Long id);
     PositionType savePositionType(PositionType command);
+    void deletePositionType(Long id);
 }

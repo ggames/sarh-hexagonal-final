@@ -44,8 +44,8 @@ public class FullUpdatePositionStrategy implements UpdatePositionStrategy<Positi
                 .findTransformationById(command.getResolutionTransformation());
 
         var organizationunit = organizationalUnitApiPort
-                .findOrganizationalunitById(command.getResolutionTransformation())
-        .orElseThrow(()-> new ResourceNotFoundException("No existe la unidad Organizativa indicada"));
+                .findOrganizationalunitById(command.getOrganizational())
+                .orElseThrow(()-> new ResourceNotFoundException("No existe la unidad Organizativa indicada"));
 
 
         position.setPositionStatus(command.getPositionStatus());
@@ -53,8 +53,7 @@ public class FullUpdatePositionStrategy implements UpdatePositionStrategy<Positi
         position.setOrganizationalUnit(organizationunit);
         position.setCreationResolution(transformation);
 
-          /* positionSpiPort.savePosition(position.get()); */
-        return position;
+        return positionSpiPort.savePosition(position);
 
     }
 }

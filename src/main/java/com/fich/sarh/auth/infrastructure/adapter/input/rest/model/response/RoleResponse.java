@@ -1,6 +1,6 @@
 package com.fich.sarh.auth.infrastructure.adapter.input.rest.model.response;
 
-import com.fich.sarh.auth.infrastructure.adapter.output.persistence.entities.RoleEnum;
+import com.fich.sarh.auth.domain.model.RoleEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

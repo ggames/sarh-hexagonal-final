@@ -20,4 +20,6 @@ public interface TransformationApiPort {
 
     boolean existByResolutionNumber(String resolutionNumber);
 
+    void deleteTransformation(Long id);
+
 }

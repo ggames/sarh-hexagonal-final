@@ -3,7 +3,7 @@ package com.fich.sarh.position.infrastructure.config;
 import com.fich.sarh.plantofpositions.domain.ports.outbound.PlantPositionSpiPort;
 import com.fich.sarh.plantofpositions.domain.service.PlantPositionService;
 import com.fich.sarh.position.domain.service.PositionDomainService;
-import com.fich.sarh.relationshipofposition.application.usecases.port.out.RelationshipQueryPort;
+import com.fich.sarh.relationshipofposition.domain.ports.outbound.RelationshipQueryPort;
 import com.fich.sarh.relationshipofposition.domain.service.RelationshipPositionDomainService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

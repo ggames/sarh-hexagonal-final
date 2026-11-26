@@ -6,11 +6,9 @@ import com.fich.sarh.planthistory.domain.ports.inbound.PlantHistoryApiPort;
 import com.fich.sarh.planthistory.infrastructure.adapters.inbound.rest.mapper.PlantHistoryRestMapper;
 import com.fich.sarh.planthistory.infrastructure.adapters.inbound.rest.model.response.PlantHistoryResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,21 +23,28 @@ public class PlantHistoryController {
 
 
     @GetMapping("{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PlantHistoryResponse> findPlantHistoryByPlantId(@PathVariable Long id){
         return PlantHistoryRestMapper.INSTANCE.toPlantHistoryResponseList(plantHistoryApiPort.findPlantHistoryByPlantId(id));
     }
 
     @GetMapping("history/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public PlantHistory findPlantByIdActive(@PathVariable  Long id){
         return plantHistoryApiPort.findPlantByIdActive(id).orElse(null);
     }
 
     @GetMapping("top/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public PlantHistory findTopByPlant(@PathVariable Long id){
         return plantHistoryApiPort.findTopByPlantIdOrderHistoryIdDesc(id);
+    }
+
+    @DeleteMapping(value = {"{id}", "delete/{id}"})
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        plantHistoryApiPort.deletePlantHistory(id);
+        return ResponseEntity.ok().build();
     }
 
 }

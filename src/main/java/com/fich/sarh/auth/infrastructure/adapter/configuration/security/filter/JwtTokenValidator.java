@@ -48,12 +48,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-
-        return path.startsWith("/uploads/");
-
-      /*  return path.startsWith("/auth/")
-                || path.startsWith("/uploads/");*/
-
+        return path.equals("/auth/log-in") || path.equals("/auth/refresh");
     }
 
     @Override
@@ -61,39 +56,50 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-
-        if (path.startsWith("/auth")) {
-
+        // Rutas públicas de autenticación: pasar directo sin verificar token
+        if (path.equals("/auth/log-in") || path.equals("/auth/refresh")) {
             filterChain.doFilter(request, response);
             return;
         }
+
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-
-            if (jwtUtils.isTokenValid(token)) {
-
-                DecodedJWT decodedJWT = jwtUtils.validateToken(token);
-
-                CustomUserDetails userDetails = jwtUtils.buildUserDetails(decodedJWT);
-
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
-
+        // Si no hay token, pasar a la cadena — Spring Security decidirá si el endpoint requiere auth
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.debug("No Authorization header para URI: {}", path);
             filterChain.doFilter(request, response);
-
-
+            return;
         }
 
+        String token = authHeader.substring(7);
 
+        // Si el token no es válido, pasar sin autenticar — Spring Security devolverá 401
+        if (!jwtUtils.isTokenValid(token)) {
+            logger.warn("Token no válido o expirado para URI: {}", path);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        try {
+            DecodedJWT decodedJWT = jwtUtils.validateToken(token);
+            CustomUserDetails userDetails = jwtUtils.buildUserDetails(decodedJWT);
+
+            UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            logger.debug("Usuario autenticado desde JWT: {}", userDetails.getUsername());
+
+        } catch (Exception e) {
+            logger.error("Error al procesar el token JWT: {}", e.getMessage());
+            // No se establece autenticación; Spring Security manejará la respuesta
+        }
+
+        filterChain.doFilter(request, response);
     }
 }
 /*

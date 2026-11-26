@@ -1,5 +1,7 @@
 package com.fich.sarh.auth.infrastructure.adapter.output.persistence.entities;
 
+import com.fich.sarh.auth.domain.model.RoleEnum;
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

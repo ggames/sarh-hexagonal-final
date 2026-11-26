@@ -12,5 +12,5 @@ public interface RelationshipPositionSpiPort {
   // void saveRelationshipPosition(RelationshipPosition relationShipPosition);
   // RelationshipPosition updateRelationshipPosition(RelationshipPosition relationShipPosition);
    void deleteRelationshipPosition(Long id);
-
+   boolean existsByPositionId(Long positionId);
 }

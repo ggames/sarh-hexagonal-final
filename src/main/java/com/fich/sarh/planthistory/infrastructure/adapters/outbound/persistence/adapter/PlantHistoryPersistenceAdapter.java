@@ -37,7 +37,7 @@ public class PlantHistoryPersistenceAdapter implements PlantHistorySpiPort {
 
     @Override
     public Optional<PlantHistory> findPlantHistoryById(Long id) {
-        return Optional.of(mapperRest.toPlantHistory(historyRepository.findById(id).get()));
+        return historyRepository.findById(id).map(mapperRest::toPlantHistory);
     }
 
 
@@ -76,5 +76,14 @@ public class PlantHistoryPersistenceAdapter implements PlantHistorySpiPort {
         return mapperRest.toPlantHistory(saved) ;
     }
 
+    @Override
+    public boolean existsByPlantId(Long plantId) {
+        return historyRepository.existsByPlantOfPosition_Id(plantId);
+    }
+
+    @Override
+    public void deletePlantHistory(Long id) {
+        historyRepository.deleteById(id);
+    }
 
 }

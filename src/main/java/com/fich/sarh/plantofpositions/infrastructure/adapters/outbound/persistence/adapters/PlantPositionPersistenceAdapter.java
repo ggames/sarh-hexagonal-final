@@ -1,6 +1,6 @@
 package com.fich.sarh.plantofpositions.infrastructure.adapters.outbound.persistence.adapters;
 
-import com.fich.sarh.common.WebAdapter;
+import com.fich.sarh.common.PersistenceAdapter;
 import com.fich.sarh.plantofpositions.domain.model.PlantFilter;
 import com.fich.sarh.plantofpositions.domain.model.PlantOfPosition;
 import com.fich.sarh.plantofpositions.domain.model.PlantOfPositionDto;
@@ -16,21 +16,14 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Optional;
 
-@WebAdapter
+@PersistenceAdapter
 @RequiredArgsConstructor
 public class PlantPositionPersistenceAdapter implements PlantPositionSpiPort {
 
     private final PlantOfPositionRepository plantRepository;
     private final PlantOfPositionCustomRepository customRepository;
-    private final IExcelPlantReport excelReport;
 
     private final PlantOfPositionMapper mapper;
-
-    @Override
-    public ByteArrayInputStream createExcel(List<PlantProjectionDTO> plants) {
-
-        return excelReport.createExcel(plants);
-    }
 
     @Override
     public List<PlantOfPositionDto> findAllPlantPositions() {
@@ -62,5 +55,25 @@ public class PlantPositionPersistenceAdapter implements PlantPositionSpiPort {
     @Override
     public boolean existsByPositionAndAgent(Long position, Long agent) {
         return plantRepository.existsByAgentAndPosition(position, agent);
+    }
+
+    @Override
+    public boolean existsByAgentId(Long agentId) {
+        return plantRepository.existsByAgent_Id(agentId);
+    }
+
+    @Override
+    public boolean existsByPositionId(Long positionId) {
+        return plantRepository.existsByPosition_Id(positionId);
+    }
+
+    @Override
+    public boolean existsBySubUnitId(Long subUnitId) {
+        return plantRepository.existsByOrganizationalSubUnit_Id(subUnitId);
+    }
+
+    @Override
+    public void deletePlantPosition(Long id) {
+        plantRepository.deleteById(id);
     }
 }

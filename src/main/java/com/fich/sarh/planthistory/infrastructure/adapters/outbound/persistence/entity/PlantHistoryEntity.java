@@ -17,7 +17,10 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 //@EntityListeners(PlantHistoryListener.class)
-@Table(name = "Historia_planta")
+@Table(name = "Historia_planta", indexes = {
+        @Index(name = "idx_plant_history_plant", columnList = "planta_cargo_id"),
+        @Index(name = "idx_plant_history_until", columnList = "fecha_hasta")
+})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PlantHistoryEntity {
 
@@ -31,7 +34,7 @@ public class PlantHistoryEntity {
     //@Column(name = "historia_actual", unique = true)
     //Long historyCurrent;
 
-    @ManyToOne //(targetEntity = PlantOfPositionEntity.class)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planta_cargo_id")
     PlantOfPositionEntity   plantOfPosition;
 

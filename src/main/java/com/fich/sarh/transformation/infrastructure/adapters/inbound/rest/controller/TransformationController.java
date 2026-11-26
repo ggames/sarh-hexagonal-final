@@ -49,7 +49,7 @@ public class TransformationController {
     }
 
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<TransformationResponse> getAll() {
 
         return transformationApiPort
@@ -59,9 +59,16 @@ public class TransformationController {
     }
 
     @GetMapping("last")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public TransformationResponse getTransformationLast() {
         //Cipher cipher = Cipher.getInstance(AES);
         return restMapper.toTransformationResponse(transformationApiPort.findFirstByOrderDesc());
+    }
+
+    @DeleteMapping(value = {"{id}", "delete/{id}"})
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deleteTransformation(@PathVariable Long id) {
+        transformationApiPort.deleteTransformation(id);
+        return ResponseEntity.ok().body("Resolución de transformación eliminada con éxito");
     }
 }

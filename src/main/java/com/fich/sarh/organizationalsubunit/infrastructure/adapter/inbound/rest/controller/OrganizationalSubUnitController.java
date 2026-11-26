@@ -35,16 +35,16 @@ public class OrganizationalSubUnitController {
 
 
 @GetMapping("{id}")
-@PreAuthorize("hasRole('USER')")
- public OrganizationalSubUnit findOrganizationalSubUnitById(@PathVariable Long id){
-        Optional<OrganizationalSubUnit> organizationalSubunit = subunitApiPort.findOrganizationalSubunitById(id);
+@PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
+public ResponseEntity<OrganizationalSubUnit> findOrganizationalSubUnitById(@PathVariable Long id) {
+    Optional<OrganizationalSubUnit> organizationalSubunit = subunitApiPort.findOrganizationalSubunitById(id);
+    if (!organizationalSubunit.isPresent()) {
+        return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(organizationalSubunit.get());
+}
 
-        if(!organizationalSubunit.isPresent()) return null;
-
-        return organizationalSubunit.get();
- }
-
-    @PreAuthorize("hasAnyRole('USER', 'INVITED')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     @GetMapping("all")
     public List<OrganizationalSubUnit> findAll(){
 
@@ -64,15 +64,22 @@ public class OrganizationalSubUnitController {
 
     @PutMapping("update/{id}")
     @PreAuthorize("hasRole('USER')")
-    public OrganizationalSubUnitResponse update(@PathVariable Long id, @RequestBody OrganizationalSubUnit request){
+    public OrganizationalSubUnitResponse update(@PathVariable Long id, @Valid @RequestBody OrganizationalSubUnit request){
 
         return restMapper.toOrganizationalSubUnit(subunitApiPort.updateOrganizationSubunit(id,request));
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'INVITED')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     @GetMapping("dto/all")
     public List<OrganizationalSubUnitDTO> findAllDto(){
 
         return subunitApiPort.findAllOrganizationalSubUnitDTOs();
+    }
+
+    @DeleteMapping(value = {"{id}", "delete/{id}"})
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deleteOrganizationalSubUnit(@PathVariable Long id) {
+        subunitApiPort.deleteOrganizationalSubunit(id);
+        return ResponseEntity.ok().body("Subunidad/Materia eliminada con éxito");
     }
 }

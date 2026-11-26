@@ -2,14 +2,14 @@ package com.fich.sarh.auth.infrastructure.adapter.output.persistence.adapter;
 
 import com.fich.sarh.auth.application.ports.output.persistence.RoleRetrieveSpiPort;
 import com.fich.sarh.auth.domain.model.RoleDTO;
-import com.fich.sarh.auth.infrastructure.adapter.output.persistence.entities.RoleEnum;
+import com.fich.sarh.auth.domain.model.RoleEnum;
 import com.fich.sarh.auth.infrastructure.adapter.output.persistence.mapper.RoleMapper;
 import com.fich.sarh.auth.infrastructure.adapter.output.persistence.repository.RoleRepository;
-import com.fich.sarh.common.WebAdapter;
+import com.fich.sarh.common.PersistenceAdapter;
 
 import java.util.List;
 
-@WebAdapter
+@PersistenceAdapter
 public class RolePersistenceAdapter implements RoleRetrieveSpiPort {
 
     private final RoleRepository roleRepository;

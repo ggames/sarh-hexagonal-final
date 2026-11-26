@@ -1,7 +1,7 @@
 package com.fich.sarh.position.infrastructure.adapters.output.persistence.adapter;
 
+import com.fich.sarh.common.PersistenceAdapter;
 import com.fich.sarh.common.StatusOfPositions;
-import com.fich.sarh.common.WebAdapter;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
 import com.fich.sarh.point.infrastructure.adapter.output.persistence.mapper.PointMapper;
 import com.fich.sarh.position.domain.model.Position;
@@ -12,12 +12,13 @@ import com.fich.sarh.position.infrastructure.adapters.output.persistence.mapper.
 import com.fich.sarh.position.infrastructure.adapters.output.persistence.repository.PositionRepository;
 import com.fich.sarh.transformation.infrastructure.adapters.outbound.persistence.mapper.TransformationMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@WebAdapter
+@PersistenceAdapter
 @RequiredArgsConstructor
 public class PositionPersistenceAdapter implements PositionSpiPort {
 
@@ -44,7 +45,15 @@ public class PositionPersistenceAdapter implements PositionSpiPort {
 
     @Override
     public List<Position> findAllPosition() {
-        return   positionMapper.toDtoList(positionRepository.findAll()) ; //List.of();
+        return findAllPosition(0, 500);
+    }
+
+    @Override
+    public List<Position> findAllPosition(int page, int size) {
+        int safeSize = Math.max(1, Math.min(size, 500));
+        int safePage = Math.max(0, page);
+        return positionMapper.toDtoList(
+                positionRepository.findAllWithRelations(PageRequest.of(safePage, safeSize)));
     }
 
     @Override
@@ -130,5 +139,20 @@ public class PositionPersistenceAdapter implements PositionSpiPort {
                 .orElseThrow(() -> new ResourceNotFoundException("Cargo no encontrado"));
         entity.setActive(false);
         positionRepository.save(entity);
+    }
+
+    @Override
+    public boolean existsByOrganizationalUnitId(Long organizationalUnitId) {
+        return positionRepository.existsByOrganizationalUnit_Id(organizationalUnitId);
+    }
+
+    @Override
+    public boolean existsByPointId(Long pointId) {
+        return positionRepository.existsByPoint_Id(pointId);
+    }
+
+    @Override
+    public boolean existsByTransformationId(Long transformationId) {
+        return positionRepository.existsByCreationResolution_IdOrResolutionSuppression_Id(transformationId, transformationId);
     }
 }

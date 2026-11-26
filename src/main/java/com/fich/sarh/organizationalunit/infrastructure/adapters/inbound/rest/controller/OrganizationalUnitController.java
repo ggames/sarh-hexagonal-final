@@ -30,7 +30,7 @@ public class OrganizationalUnitController {
 
 
     @GetMapping("all")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<OrganizationalUnitResponse> findAll(){
         List<OrganizationalUnitResponse> responses = organizationalApiPort.findAllOrganizationalUnits()
                 .stream().map(restMapper::toOrganizationalUnitResponse).toList();
@@ -38,7 +38,7 @@ public class OrganizationalUnitController {
     }
 
     @GetMapping("dto/all")
-    @PreAuthorize("hasAnyRole('USER', 'INVITED')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<OrganizationalDTO> findOrganizationalDTO(){
         return organizationalApiPort.findAllOrganizationDto();
     }
@@ -53,7 +53,7 @@ public class OrganizationalUnitController {
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public OrganizationalUnit findOrganizationalUnitById(@PathVariable Long id){
         OrganizationalUnit organizational = organizationalApiPort
                   .findOrganizationalunitById(id).orElseThrow(() -> new ResourceNotFoundException("Departamento no existente"));
@@ -68,5 +68,12 @@ public class OrganizationalUnitController {
         OrganizationalUnit organizationalUnit = organizationalApiPort
                 .updateOrganizationUnit(id, domainModel);
         return ResponseEntity.status(HttpStatus.OK).body(organizationalUnit) ;
+    }
+
+    @DeleteMapping(value = {"{id}", "delete/{id}"})
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deleteOrganizationalUnit(@PathVariable Long id) {
+        organizationalApiPort.deleteOrganizationalUnit(id);
+        return ResponseEntity.ok().body("Departamento eliminado con éxito");
     }
 }

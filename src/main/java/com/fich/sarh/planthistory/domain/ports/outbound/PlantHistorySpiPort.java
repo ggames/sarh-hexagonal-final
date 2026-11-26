@@ -13,5 +13,7 @@ public interface PlantHistorySpiPort {
     PlantHistory  findTopByPlantIdOrderHistoryIdDesc(Long plantId);
     PlantHistory savePlantHistory(PlantHistory plantHistory);
     PlantHistory updatePlantHistory(PlantHistory plantHistory);
+    boolean existsByPlantId(Long plantId);
+    void deletePlantHistory(Long id);
 
 }

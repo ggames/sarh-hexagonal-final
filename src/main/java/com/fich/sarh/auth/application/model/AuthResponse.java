@@ -1,5 +1,6 @@
-package com.fich.sarh.auth.infrastructure.adapter.input.rest.model.response;
+package com.fich.sarh.auth.application.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,6 +18,7 @@ public class AuthResponse {
     String username;
     String message;
     String accessToken;
+    @JsonIgnore
     String refreshToken;
     boolean mustChangePassword;
     Set<String> roles;

@@ -13,5 +13,7 @@ public interface OrganizationalSubunitApiPort {
     List<OrganizationalSubUnit> findByName(String unit);
     OrganizationalSubUnit saveOrganizationSubunit(OrganizationalSubUnit request);
     OrganizationalSubUnit updateOrganizationSubunit(Long id, OrganizationalSubUnit request);
+    boolean existsByOrganizationalUnitId(Long organizationalUnitId);
+    void deleteOrganizationalSubunit(Long id);
 
 }

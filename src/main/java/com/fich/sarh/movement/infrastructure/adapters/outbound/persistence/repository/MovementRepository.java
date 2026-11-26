@@ -11,4 +11,8 @@ public interface MovementRepository extends JpaRepository<MovementEntity, Long> 
   /*  @Query("SELECT m FROM MovementEntity m LEFT JOIN m.plant pl WHERE pl.currentStatusID IN ?1")
    List<MovementEntity> fetchMovementWithInactiveAgent(List<PlantStatus> status);*/
 
+    boolean existsByPosition_Id(Long positionId);
+
+    boolean existsByPlant_Id(Long plantId);
+
 }

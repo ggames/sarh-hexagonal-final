@@ -23,8 +23,9 @@ public class MovementUseCases implements MovementApiPort {
 
     @Override
     public Movement findMovementById(Long id) {
-
-        return movementSpiPort.findMovementById(id).get();
+        return movementSpiPort.findMovementById(id)
+                .orElseThrow(() -> new com.fich.sarh.common.exceptions.ResourceNotFoundException(
+                        "Movimiento con ID " + id + " no encontrado"));
     }
 
     @Override
@@ -40,16 +41,30 @@ public class MovementUseCases implements MovementApiPort {
 
     @Override
     public void updateMovement(Long id, Movement movement) {
-        movementSpiPort.findMovementById(id).map(
-                mov -> {
-                    mov.setReasonForMovement(movement.getReasonForMovement());
-                    mov.setMovementDate(movement.getMovementDate());
-                    mov.setPlantId(movement.getPlantId());
-                    mov.setPositionId(movement.getPositionId());
+        movementSpiPort.findMovementById(id).ifPresent(mov -> {
+            mov.setReasonForMovement(movement.getReasonForMovement());
+            mov.setMovementDate(movement.getMovementDate());
+            mov.setPlantId(movement.getPlantId());
+            mov.setPositionId(movement.getPositionId());
+            movementSpiPort.saveMovement(mov);
+        });
+    }
 
-                    movementSpiPort.saveMovement(mov);
-                    return null;
-                }
-        );
+    @Override
+    public boolean existsByPositionId(Long positionId) {
+        return movementSpiPort.existsByPositionId(positionId);
+    }
+
+    @Override
+    public boolean existsByPlantId(Long plantId) {
+        return movementSpiPort.existsByPlantId(plantId);
+    }
+
+    @Override
+    public void deleteMovement(Long id) {
+        movementSpiPort.findMovementById(id)
+                .orElseThrow(() -> new com.fich.sarh.common.exceptions.ResourceNotFoundException(
+                        "Movimiento con ID " + id + " no encontrado"));
+        movementSpiPort.deleteMovement(id);
     }
 }

@@ -21,11 +21,17 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 @Entity
-@Table(name = "cargos")
+@Table(name = "cargos", indexes = {
+        @Index(name = "idx_position_status", columnList = "estado_cargo"),
+        @Index(name = "idx_position_points", columnList = "puntos_disp")
+})
 public class PositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Version
+    Long version;
 
     boolean active;
 
@@ -45,11 +51,11 @@ public class PositionEntity {
     Long pointsAvailable;
 
     @JoinColumn(name = "resolucion_creacion_id")
-    @ManyToOne(targetEntity = TransformationEntity.class)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = TransformationEntity.class)
     TransformationEntity creationResolution;
 
     @JoinColumn(name = "resolucion_supresion_id")
-    @ManyToOne(targetEntity = TransformationEntity.class)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = TransformationEntity.class)
     TransformationEntity resolutionSuppression;
 
     @Builder.Default

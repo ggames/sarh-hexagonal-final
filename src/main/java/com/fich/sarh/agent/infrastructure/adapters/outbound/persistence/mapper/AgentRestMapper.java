@@ -4,6 +4,7 @@ package com.fich.sarh.agent.infrastructure.adapters.outbound.persistence.mapper;
 import com.fich.sarh.agent.domain.model.Agent;
 import com.fich.sarh.agent.infrastructure.adapters.inbound.rest.model.request.AgentRequest;
 import com.fich.sarh.agent.infrastructure.adapters.inbound.rest.model.response.AgentResponse;
+import com.fich.sarh.common.domain.PageResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -24,5 +25,9 @@ public interface AgentRestMapper {
 
     default Page<AgentResponse> toAgentResponsePage(Page<Agent> entities){
         return entities.map(this::AgentToAgentResponse);
+    }
+
+    default PageResponse<AgentResponse> toAgentResponsePageResponse(PageResponse<Agent> pageResponse) {
+        return pageResponse.map(this::AgentToAgentResponse);
     }
 }

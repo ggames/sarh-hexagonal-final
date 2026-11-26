@@ -3,7 +3,7 @@ package com.fich.sarh.auth.application.services;
 import com.fich.sarh.auth.application.ports.entrypoint.api.RoleRetrieveApiPort;
 import com.fich.sarh.auth.application.ports.output.persistence.RoleRetrieveSpiPort;
 import com.fich.sarh.auth.domain.model.RoleDTO;
-import com.fich.sarh.auth.infrastructure.adapter.output.persistence.entities.RoleEnum;
+import com.fich.sarh.auth.domain.model.RoleEnum;
 import com.fich.sarh.common.UseCase;
 
 import java.util.List;

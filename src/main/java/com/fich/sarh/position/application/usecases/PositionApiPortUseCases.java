@@ -2,9 +2,12 @@ package com.fich.sarh.position.application.usecases;
 
 import com.fich.sarh.common.StatusOfPositions;
 import com.fich.sarh.common.UseCase;
+import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
+import com.fich.sarh.movement.domain.ports.inbound.MovementApiPort;
 import com.fich.sarh.organizationalunit.domain.model.OrganizationalUnit;
 import com.fich.sarh.organizationalunit.domain.ports.inbound.OrganizationalunitApiPort;
+import com.fich.sarh.plantofpositions.domain.ports.inbound.PlantPositionApiPort;
 import com.fich.sarh.point.domain.model.Point;
 import com.fich.sarh.point.domain.ports.inbound.PointApiPort;
 import com.fich.sarh.position.application.strategy.AvailablePointUpdatePositionStrategy;
@@ -16,19 +19,19 @@ import com.fich.sarh.position.domain.model.PositionDto;
 import com.fich.sarh.position.domain.ports.inbound.PositionApiPort;
 import com.fich.sarh.position.domain.ports.outbound.PositionSpiPort;
 import com.fich.sarh.position.domain.service.PositionDomainService;
+import com.fich.sarh.relationshipofposition.domain.ports.inbound.RelationshipPositionApiPort;
 import com.fich.sarh.relationshipofposition.domain.service.RelationshipPositionDomainService;
 import com.fich.sarh.transformation.domain.ports.inbound.TransformationApiPort;
 import com.fich.sarh.transformation.domain.model.Transformation;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @UseCase
-@RequiredArgsConstructor
 @Log4j2
 class PositionApiPortUseCases implements PositionApiPort {
 
@@ -43,6 +46,37 @@ class PositionApiPortUseCases implements PositionApiPort {
     private final FullUpdatePositionStrategy fullStrategy;
     private final AvailablePointUpdatePositionStrategy availableStrategy;
     private final OriginatorUpdateStrategy originatorStrategy;
+
+    private final PlantPositionApiPort plantPositionApiPort;
+    private final RelationshipPositionApiPort relationshipPositionApiPort;
+    private final MovementApiPort movementApiPort;
+
+    public PositionApiPortUseCases(
+            PositionSpiPort positionSpiPort,
+            PositionDomainService positionService,
+            RelationshipPositionDomainService relationService,
+            PointApiPort pointApiPort,
+            TransformationApiPort transformationApiPort,
+            OrganizationalunitApiPort organizationalUnitApiPort,
+            FullUpdatePositionStrategy fullStrategy,
+            AvailablePointUpdatePositionStrategy availableStrategy,
+            OriginatorUpdateStrategy originatorStrategy,
+            @Lazy PlantPositionApiPort plantPositionApiPort,
+            @Lazy RelationshipPositionApiPort relationshipPositionApiPort,
+            @Lazy MovementApiPort movementApiPort) {
+        this.positionSpiPort = positionSpiPort;
+        this.positionService = positionService;
+        this.relationService = relationService;
+        this.pointApiPort = pointApiPort;
+        this.transformationApiPort = transformationApiPort;
+        this.organizationalUnitApiPort = organizationalUnitApiPort;
+        this.fullStrategy = fullStrategy;
+        this.availableStrategy = availableStrategy;
+        this.originatorStrategy = originatorStrategy;
+        this.plantPositionApiPort = plantPositionApiPort;
+        this.relationshipPositionApiPort = relationshipPositionApiPort;
+        this.movementApiPort = movementApiPort;
+    }
 
 /*    @Override
     public List<PositionDto> findOriginPositions(Long id_generatePosition) {
@@ -64,6 +98,11 @@ class PositionApiPortUseCases implements PositionApiPort {
     @Override
     public List<Position> findAllPosition() {
         return positionSpiPort.findAllPosition();
+    }
+
+    @Override
+    public List<Position> findAllPosition(int page, int size) {
+        return positionSpiPort.findAllPosition(page, size);
     }
 
     @Override
@@ -189,6 +228,36 @@ class PositionApiPortUseCases implements PositionApiPort {
     @Override
     @Transactional
     public void deletePosition(Long id) {
+        positionSpiPort.findPositionById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cargo no encontrado con ID: " + id));
+
+        if (plantPositionApiPort.existsByPositionId(id)) {
+            throw new BusinessRuleViolationException("No se puede eliminar el cargo porque forma parte de la planta de cargos.");
+        }
+
+        if (relationshipPositionApiPort.existsByPositionId(id)) {
+            throw new BusinessRuleViolationException("No se puede eliminar el cargo porque está asociado a una transformación o relación con otros cargos.");
+        }
+
+        if (movementApiPort.existsByPositionId(id)) {
+            throw new BusinessRuleViolationException("No se puede eliminar el cargo porque posee movimientos registrados.");
+        }
+
         positionSpiPort.deletePosition(id);
+    }
+
+    @Override
+    public boolean existsByOrganizationalUnitId(Long organizationalUnitId) {
+        return positionSpiPort.existsByOrganizationalUnitId(organizationalUnitId);
+    }
+
+    @Override
+    public boolean existsByPointId(Long pointId) {
+        return positionSpiPort.existsByPointId(pointId);
+    }
+
+    @Override
+    public boolean existsByTransformationId(Long transformationId) {
+        return positionSpiPort.existsByTransformationId(transformationId);
     }
 }

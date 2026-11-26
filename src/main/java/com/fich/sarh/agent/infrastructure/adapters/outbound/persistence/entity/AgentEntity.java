@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="Agentes")
+@Table(name="Agentes", indexes = @Index(name = "uk_agent_document", columnList = "documento", unique = true))
 public class AgentEntity {
 
     @Id

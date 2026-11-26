@@ -26,7 +26,7 @@ public class OrganizationalSubUnitEntity {
     @Column(name = "codigo_guarani")
     String guaraniCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unidad_organizativa_id")
     OrganizationalUnitEntity organizationalUnit;
 

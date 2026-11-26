@@ -11,7 +11,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "relationship_position")
+@Table(name = "relationship_position", indexes = {
+        @Index(name = "idx_relationship_parent", columnList = "parent_position_id"),
+        @Index(name = "idx_relationship_child", columnList = "child_position_id")
+})
 public class RelationshipPositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

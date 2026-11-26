@@ -23,11 +23,17 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 @Entity
-@Table(name = "planta_cargos")
+@Table(name = "planta_cargos", indexes = {
+        @Index(name = "idx_plant_status", columnList = "estado_vigente_id"),
+        @Index(name = "idx_plant_character", columnList = "caracter")
+})
 public class PlantOfPositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Version
+    Long version;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cargo_id", nullable = false)

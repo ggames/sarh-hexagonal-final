@@ -6,9 +6,11 @@ import com.fich.sarh.positiontype.domain.ports.inbound.PositionTypeApiPort;
 import com.fich.sarh.positiontype.infrastructure.adapter.inbound.rest.mapper.PositionTypeRestMapper;
 import com.fich.sarh.positiontype.infrastructure.adapter.inbound.rest.model.request.PositionTypeRequest;
 import com.fich.sarh.positiontype.infrastructure.adapter.inbound.rest.model.response.PositionTypeResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +28,7 @@ public class PositionTypeController {
 
 
     @GetMapping("all")
+    @PreAuthorize("hasAnyRole('USER','ONLY_CONSULT')")
     public List<PositionTypeResponse> findAll(){
         return    positionTypeApiPort.findAllPositionType().stream().map(
                 restMapper::toPositionTypeResponse
@@ -33,7 +36,8 @@ public class PositionTypeController {
     }
 
     @PostMapping("create")
-    public ResponseEntity<PositionTypeResponse> save(@RequestBody PositionTypeRequest request){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PositionTypeResponse> save(@Valid @RequestBody PositionTypeRequest request){
         PositionType domainModel = restMapper.toPositionType(request);
         PositionType saved = positionTypeApiPort.savePositionType(domainModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -42,10 +46,18 @@ public class PositionTypeController {
     }
 
     @PutMapping("update/{id}")
-    public PositionTypeResponse update(@PathVariable Long id, @RequestBody PositionTypeRequest request ){
+    @PreAuthorize("hasRole('ADMIN')")
+    public PositionTypeResponse update(@PathVariable Long id, @Valid @RequestBody PositionTypeRequest request ){
         PositionType domainModel = restMapper.toPositionType(request);
         PositionType updated = positionTypeApiPort.updatePositionType(id, domainModel);
         return restMapper.toPositionTypeResponse(updated);
+    }
+
+    @DeleteMapping(value = {"{id}", "delete/{id}"})
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        positionTypeApiPort.deletePositionType(id);
+        return ResponseEntity.ok().build();
     }
 
 }

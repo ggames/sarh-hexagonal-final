@@ -1,6 +1,6 @@
 package com.fich.sarh.relationshipofposition.infrastructure.adapters.output.persistence.adapter;
 
-import com.fich.sarh.relationshipofposition.application.usecases.port.out.RelationshipQueryPort;
+import com.fich.sarh.relationshipofposition.domain.ports.outbound.RelationshipQueryPort;
 import com.fich.sarh.relationshipofposition.infrastructure.adapters.output.persistence.entity.RelationshipPositionEntity;
 import com.fich.sarh.relationshipofposition.infrastructure.adapters.output.persistence.repository.RelationshipPositionRepository;
 import lombok.RequiredArgsConstructor;

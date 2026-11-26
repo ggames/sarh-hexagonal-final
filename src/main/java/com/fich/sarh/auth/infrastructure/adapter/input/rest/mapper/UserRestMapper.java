@@ -2,7 +2,7 @@ package com.fich.sarh.auth.infrastructure.adapter.input.rest.mapper;
 
 
 import com.fich.sarh.auth.domain.model.UserDTO;
-import com.fich.sarh.auth.infrastructure.adapter.input.rest.model.request.UserRequest;
+import com.fich.sarh.auth.application.model.UserRequest;
 import com.fich.sarh.auth.infrastructure.adapter.input.rest.model.response.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

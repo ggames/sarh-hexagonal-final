@@ -1,11 +1,11 @@
 package com.fich.sarh.auth.infrastructure.adapter.configuration.security;
 
+import com.fich.sarh.auth.application.model.AuthenticatedUser;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements AuthenticatedUser {
 
     private final Long id;
     private final String username;

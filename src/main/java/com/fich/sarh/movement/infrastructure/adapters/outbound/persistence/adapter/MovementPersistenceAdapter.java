@@ -71,9 +71,21 @@ public class MovementPersistenceAdapter implements MovementSpiPort {
         entity.setPlant(plantEntity);
         entity.setPosition(positionEntity);
 
-
-
+        movementRepository.save(entity);
+    }
+    @Override
+    public boolean existsByPositionId(Long positionId) {
+        return movementRepository.existsByPosition_Id(positionId);
     }
 
+    @Override
+    public boolean existsByPlantId(Long plantId) {
+        return movementRepository.existsByPlant_Id(plantId);
+    }
+
+    @Override
+    public void deleteMovement(Long id) {
+        movementRepository.deleteById(id);
+    }
 
 }

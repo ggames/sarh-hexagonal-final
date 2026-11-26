@@ -13,4 +13,6 @@ public interface RelationshipPositionRepository extends JpaRepository<Relationsh
   //  WHERE r.parent.id = :parentId
   // """)
     List<RelationshipPositionEntity> findByParentId(Long parentId);
+
+    boolean existsByParent_IdOrChild_Id(Long parentId, Long childId);
 }

@@ -13,6 +13,7 @@ public interface PositionApiPort {
     List<PositionDto> findOriginPositions(Long id_generatePosition);
     List<PositionDto> findAllPositions();
     List<Position> findAllPosition();
+    List<Position> findAllPosition(int page, int size);
     List<PositionDto> findVacantPositions();
     List<PositionDto>findFreePositions();
     List<Position> findAllByIdIn(List<Long> ids);
@@ -25,4 +26,7 @@ public interface PositionApiPort {
 
     Position addPosition(PositionCommand command);
     void deletePosition(Long id);
+    boolean existsByOrganizationalUnitId(Long organizationalUnitId);
+    boolean existsByPointId(Long pointId);
+    boolean existsByTransformationId(Long transformationId);
 }

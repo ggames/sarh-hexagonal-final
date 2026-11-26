@@ -1,4 +1,4 @@
-package com.fich.sarh.auth.infrastructure.adapter.input.rest.model.request;
+package com.fich.sarh.auth.application.model;
 
 
 import jakarta.validation.constraints.Email;

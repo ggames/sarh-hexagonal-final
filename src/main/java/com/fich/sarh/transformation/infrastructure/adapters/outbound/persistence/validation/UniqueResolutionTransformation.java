@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = UniqueResolutionTransformationValidator.class)
 public @interface UniqueResolutionTransformation {
-    String message() default  "La resolucón de transformación ingresada ya existe";
+    String message() default  "La resolución de transformación ingresada ya existe";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

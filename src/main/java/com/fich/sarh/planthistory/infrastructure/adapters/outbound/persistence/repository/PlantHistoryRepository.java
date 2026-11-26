@@ -17,6 +17,8 @@ public interface PlantHistoryRepository extends JpaRepository<PlantHistoryEntity
 
 
     PlantHistoryEntity findFirstByPlantOfPosition_IdOrderByIdDesc(Long plantId);
+
+    boolean existsByPlantOfPosition_Id(Long plantId);
 /*    @Query("""
     SELECT ph 
     FROM PlantHistoryEntity ph 

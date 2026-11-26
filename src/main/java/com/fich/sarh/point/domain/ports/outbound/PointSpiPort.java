@@ -10,4 +10,5 @@ public interface PointSpiPort {
     Optional<Point> findPointById(Long id);
     Point savePoint(Point request);
     Point updateSave(Point request);
+    void deletePoint(Long id);
 }

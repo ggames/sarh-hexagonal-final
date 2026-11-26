@@ -1,4 +1,5 @@
 package com.fich.sarh.auth.infrastructure.adapter.output.persistence.adapter;
+import com.fich.sarh.auth.domain.model.RoleEnum;
 
 
 import com.fich.sarh.auth.application.ports.output.persistence.UserResetPasswordSpiPort;

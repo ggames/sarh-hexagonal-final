@@ -4,23 +4,36 @@ import com.fich.sarh.agent.domain.model.Agent;
 import com.fich.sarh.agent.domain.ports.inbound.AgentApiPort;
 import com.fich.sarh.agent.domain.ports.outbound.AgentSpiPort;
 import com.fich.sarh.common.UseCase;
+import com.fich.sarh.common.domain.PageResponse;
 import com.fich.sarh.common.exceptions.BusinessRuleViolationException;
 import com.fich.sarh.common.exceptions.ResourceNotFoundException;
+import com.fich.sarh.organizationalunit.domain.ports.inbound.OrganizationalunitApiPort;
+import com.fich.sarh.plantofpositions.domain.ports.inbound.PlantPositionApiPort;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
 
 @UseCase
-@RequiredArgsConstructor
 public class AgentApiPortUseCases implements AgentApiPort {
 
     private final AgentSpiPort agentSpiPort;
+    private final PlantPositionApiPort plantPositionApiPort;
+    private final OrganizationalunitApiPort organizationalUnitApiPort;
+
+    public AgentApiPortUseCases(
+            AgentSpiPort agentSpiPort,
+            @Lazy PlantPositionApiPort plantPositionApiPort,
+            @Lazy OrganizationalunitApiPort organizationalUnitApiPort) {
+        this.agentSpiPort = agentSpiPort;
+        this.plantPositionApiPort = plantPositionApiPort;
+        this.organizationalUnitApiPort = organizationalUnitApiPort;
+    }
 
     @Override
-    public Page<Agent> findAllAgent(int page, int size) {
+    public PageResponse<Agent> findAllAgent(int page, int size) {
 
         return  agentSpiPort.findAllAgent(page, size);
 
@@ -80,5 +93,22 @@ public class AgentApiPortUseCases implements AgentApiPort {
     @Override
     public boolean existByDocumentAgent(String document) {
         return agentSpiPort.existByDocumentAgent(document);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAgent(Long id) {
+        agentSpiPort.findAgentById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Agente no encontrado con ID: " + id));
+
+        if (plantPositionApiPort.existsByAgentId(id)) {
+            throw new BusinessRuleViolationException("No se puede eliminar el agente porque está asignado a un cargo en la planta de cargos.");
+        }
+
+        if (organizationalUnitApiPort.existsByDirectorOrViceDirectorId(id)) {
+            throw new BusinessRuleViolationException("No se puede eliminar el agente porque figura como director o vicedirector de un departamento.");
+        }
+
+        agentSpiPort.deleteAgent(id);
     }
 }

@@ -11,4 +11,7 @@ public interface MovementApiPort {
     Movement findByPlant(PlantOfPosition plant);
     void saveMovement(Movement movement);
     void updateMovement(Long id, Movement movement);
+    boolean existsByPositionId(Long positionId);
+    boolean existsByPlantId(Long plantId);
+    void deleteMovement(Long id);
 }

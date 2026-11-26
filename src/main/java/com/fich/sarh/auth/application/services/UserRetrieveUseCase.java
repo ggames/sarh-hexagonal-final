@@ -20,7 +20,7 @@ public class UserRetrieveUseCase implements UserRetrieveApiPort {
 
     @Override
     public List<UserDTO> findAllUsers() {
-        return null;
+        return userRetrieveSpiPort.findAllUsers();
     }
 
     @Override
